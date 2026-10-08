@@ -11,3 +11,5 @@ Polymorphism allows objects of different classes to be treated through a common 
 An interface defines a contract that classes can implement.
 
 A class is a blueprint for creating objects.
+
+An interface allows different classes to follow the same contract
