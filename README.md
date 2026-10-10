@@ -11,22 +11,27 @@ provided documents.
 
 ## Current Features
 
-- Java OOP project structure
-- Document representation
 - Basic document loading
+- Splits document into paragraph_based chunks
+- Keyword search that returns matching chunks
+- Cosine similarity ('VectorMath') for comparing embedding vector
 
 ## Planned Features
 
-- Text chunking
-- Keyword-based search
-- Semantic search
 - Embeddings
 - LLM integration
 - PDF support
 - REST API
 
+# Roadmap
+
+1. Basic Java - load text, chunk keyword search (done)
+2. Semantic search - embedding and vector similarity ( in progress)
+3. LLM integration - generate answers from retrieved chunks (RAG)
+4. Spring Boot API - 'POST /documents' and 'POST /questions'
+5. Production Features - PDF upload upload, PostGreSQL, pgvector, Docker tests, frontend
+
 ## Technologies
 
 - Java
-- Git
-- GitHub
+- Git / GitHub
