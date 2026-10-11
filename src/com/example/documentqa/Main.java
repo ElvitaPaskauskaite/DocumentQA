@@ -24,34 +24,26 @@ public class Main {
 		List<TextChunk> chunks =
 				splitter.split(document);
 		
-		// Display the chunks
-		
-		for (TextChunk chunk : chunks) {
-			
-			System.out.println("\nChunk" + chunk.getId());
-			System.out.println(chunk.getContent());
-		}
 		
 		// ask the user for a search term and run the search 
 		Scanner scanner = new Scanner(System.in);
-		System.out.print("\nEnter a search term: ");
+		System.out.print("\nEnter a question about Java: ");
 		String query = scanner.nextLine();
 		scanner.close();
 		
-		// run the search
-		SearchService searchService = new SearchService();
-		List<TextChunk> results = searchService.search(query, chunks);
 		
-		System.out.println("\n Search results for " + query);
-		if (results.isEmpty()) {
-			System.out.println("No chunks matched.");
-		} else {
-			System.out.println("Found " + results.size() + "matchig chunk(s)");
-			
-			for (TextChunk chunk : results) {
-				System.out.println("\nChunk" + chunk.getId());
-				System.out.println(chunk.getContent());
-			}
+		// Run Semantic search: the vocabulary is built from the chunks, then each chunk is embedded once (Version 2)
+		EmbeddingModel model = new BagOfWordsEmbeddingModel(chunks);
+		SemanticSearchService semantic = new SemanticSearchService(model);
+		semantic.index(chunks);
+
+		List<EmbeddingScore> semanticResults = semantic.search(query, 3);
+
+		System.out.println("\nSemantic search results for: " + query);
+		for (EmbeddingScore result : semanticResults) {
+		    System.out.println("\nChunk " + result.getChunk().getId()
+		            + " (score: " + String.format("%.3f", result.getScore()) + ")");
+		    System.out.println(result.getChunk().getContent());
 		}
 		
 		
