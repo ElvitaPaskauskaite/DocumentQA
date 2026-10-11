@@ -1,9 +1,11 @@
 package com.example.documentqa;
 
+import java.util.List;
+
 public class VectorMathDemo {
 
 
-	    public static void main(String[] args) {
+	    public static void main(String[] args) throws Exception {
 
 	        // Same direction, different length -> expect 1.0
 	        double[] a = {1, 2};
@@ -31,5 +33,16 @@ public class VectorMathDemo {
 	        } catch (IllegalArgumentException ex) {
 	            System.out.println("Mismatched lengths: threw exception as expected -> " + ex.getMessage());
 	        }
+	        
+	        List<TextChunk> chunks = List.of(
+	        	    new TextChunk(1, "java is fun"),
+	        	    new TextChunk(2, "java is hard"));
+
+	        	EmbeddingModel model = new BagOfWordsEmbeddingModel(chunks);
+	        	double[] vecFun = model.embed("java is fun");
+	        	double[] vecHard = model.embed("java is hard");
+	        	System.out.println(VectorMath.cosineSimilarity(vecFun, vecHard)); // expected value 0.667
 	    }
+	    
+	    
 	}
