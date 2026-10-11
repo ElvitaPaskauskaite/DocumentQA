@@ -64,5 +64,22 @@ public class SemanticSearchService {
         int limit = Math.min(topK, scored.size());
         return new ArrayList<>(scored.subList(0, limit));       
 	}
+	
+	// Same as search(), but drops chunks scoring below minScore.
+	// Says "nothing relevant found" instead of returning noise.
+	public List<EmbeddingScore> search(String query, int topK, double minScore) throws Exception {
+
+	    // Reuse the existing ranking: sorted best-first and trimmed to topK
+	    List<EmbeddingScore> top = search(query, topK);
+
+	    List<EmbeddingScore> filtered = new ArrayList<>();
+	    for (EmbeddingScore s : top) {
+	        // Keep only results that are at least as similar as the threshold
+	        if (s.getScore() >= minScore) {
+	            filtered.add(s);
+	        }
+	    }
+	    return filtered;
+	}
 
 }

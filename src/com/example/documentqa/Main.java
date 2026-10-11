@@ -16,7 +16,7 @@ public class Main {
 		System.out.println("Document loaded!");
 		System.out.println("Title:" + document.getTitle());
 		
-		System.out.println("\n--- Text Chunks ---");
+		System.out.println("\n--- Welcome to the document question answering system! ---");
 		
 		// Split the document
 		TextSplitter splitter = new TextSplitter();
@@ -37,19 +37,22 @@ public class Main {
 		SemanticSearchService semantic = new SemanticSearchService(model);
 		semantic.index(chunks);
 
-		List<EmbeddingScore> semanticResults = semantic.search(query, 3);
+		List<EmbeddingScore> semanticResults = semantic.search(query, 3, 0.1);
 
 		System.out.println("\nSemantic search results for: " + query);
-		for (EmbeddingScore result : semanticResults) {
+		if (semanticResults.isEmpty()) {
+			System.out.println("No relevant chunks found");
+		} else {
+			for (EmbeddingScore result : semanticResults) {
 		    System.out.println("\nChunk " + result.getChunk().getId()
 		            + " (score: " + String.format("%.3f", result.getScore()) + ")");
 		    System.out.println(result.getChunk().getContent());
+			}
 		}
 		
-		
-		
-		
-		
+			
 	}
 
 }
+	
+
