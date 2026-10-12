@@ -15,10 +15,10 @@ provided documents.
 - Splits document into paragraph_based chunks
 - Keyword search that returns matching chunks
 - Cosine similarity ('VectorMath') for comparing embedding vector
+- 'EmbeddingMOdel' interface with two implementations (BagOfWords and Ollama)
 
 ## Planned Features
 
-- Embeddings
 - LLM integration
 - PDF support
 - REST API
@@ -26,12 +26,15 @@ provided documents.
 # Roadmap
 
 1. Basic Java - load text, chunk keyword search (done)
-2. Semantic search - embedding and vector similarity ( in progress)
+2. Semantic search - embedding and vector similarity (done)
 3. LLM integration - generate answers from retrieved chunks (RAG)
 4. Spring Boot API - 'POST /documents' and 'POST /questions'
 5. Production Features - PDF upload upload, PostGreSQL, pgvector, Docker tests, frontend
 
-## Technologies
+## Technologies and requirements
 
-- Java
+- Java+ and Maven
 - Git / GitHub
+-[Ollama](https://ollama.com) installed and running, with the embedding model pulled:
+
+ollama pull nomic-embed-text
