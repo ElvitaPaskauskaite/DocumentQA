@@ -34,14 +34,26 @@ public class VectorMathDemo {
 	            System.out.println("Mismatched lengths: threw exception as expected -> " + ex.getMessage());
 	        }
 	        
+	        System.out.println("\nBagOfWords Embedding model test ----------------\n");
 	        List<TextChunk> chunks = List.of(
 	        	    new TextChunk(1, "java is fun"),
 	        	    new TextChunk(2, "java is hard"));
+	        
+	        EmbeddingModel model = new BagOfWordsEmbeddingModel(chunks);
+	        double[] vecFun = model.embed("java is fun");
+	        double[] vecHard = model.embed("java is hard");
+	        System.out.println(VectorMath.cosineSimilarity(vecFun, vecHard)); // expected value 0.667
+	        
+	        System.out.println("\nOllama Embedding model Demo --------------------\n");
+	        EmbeddingModel ollama = new OllamaEmbeddingModel("nomic-embed-text");
 
-	        	EmbeddingModel model = new BagOfWordsEmbeddingModel(chunks);
-	        	double[] vecFun = model.embed("java is fun");
-	        	double[] vecHard = model.embed("java is hard");
-	        	System.out.println(VectorMath.cosineSimilarity(vecFun, vecHard)); // expected value 0.667
+	        double[] inheritance = ollama.embed("inheritance in java");
+	        double[] polymorphism = ollama.embed("polymorphism in java");
+	        double[] weather = ollama.embed("the weather in Paris");
+
+	        System.out.println("Vector length: " + inheritance.length);  // expect 768
+	        System.out.println("inheritance vs polymorphism: " + VectorMath.cosineSimilarity(inheritance, polymorphism));
+	        System.out.println("inheritance vs weather:     " + VectorMath.cosineSimilarity(inheritance, weather));
 	    }
 	    
 	    
