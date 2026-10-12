@@ -33,11 +33,11 @@ public class Main {
 		
 		
 		// Run Semantic search: the vocabulary is built from the chunks, then each chunk is embedded once (Version 2)
-		EmbeddingModel model = new BagOfWordsEmbeddingModel(chunks);
+		EmbeddingModel model = new OllamaEmbeddingModel("nomic-embed-text");
 		SemanticSearchService semantic = new SemanticSearchService(model);
 		semantic.index(chunks);
 
-		List<EmbeddingScore> semanticResults = semantic.search(query, 3, 0.1);
+		List<EmbeddingScore> semanticResults = semantic.search(query, 5,-1);	// retune the minimum score as models rarely return 0.0
 
 		System.out.println("\nSemantic search results for: " + query);
 		if (semanticResults.isEmpty()) {
