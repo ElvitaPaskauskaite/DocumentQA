@@ -1,6 +1,7 @@
 package com.example.documentqa;
 
 import java.util.List;
+import java.util.ArrayList;
 
 public class VectorMathDemo {
 
@@ -58,7 +59,22 @@ public class VectorMathDemo {
 	        System.out.println("\nOllama Chat model Demo --------------------\n");
 	        ChatModel chat = new OllamaChatModel("llama3.2");
 	        System.out.println(chat.generate("In one sentence what is encapsulation in Java?"));
+	        System.out.println("\n--------------------------------------------\n");
 	        
+	        System.out.println("PromptBuilder test (hand-made data, no Ollama needed)\n");
+	        PromptBuilder builder = new PromptBuilder();
+
+	        // Two fake chunks, as if the splitter had produced them
+	        TextChunk chunk1 = new TextChunk(1, "Inheritance lets a class reuse fields and methods of a parent class.");
+	        TextChunk chunk2 = new TextChunk(2, "A subclass is declared with the extends keyword.");
+
+	        // Wrap each in an EmbeddingScore, as if the search had ranked them
+	        List<EmbeddingScore> fakeResults = List.of(
+	                new EmbeddingScore(chunk1, 0.8),
+	                new EmbeddingScore(chunk2, 0.7));
+
+	        String prompt = builder.build("what is inheritance?", fakeResults);
+	        System.out.println(prompt);
 	    }
 	    
 	    
