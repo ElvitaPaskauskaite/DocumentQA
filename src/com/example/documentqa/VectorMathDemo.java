@@ -54,6 +54,11 @@ public class VectorMathDemo {
 	        System.out.println("Vector length: " + inheritance.length);  // expect 768
 	        System.out.println("inheritance vs polymorphism: " + VectorMath.cosineSimilarity(inheritance, polymorphism));
 	        System.out.println("inheritance vs weather:     " + VectorMath.cosineSimilarity(inheritance, weather));
+	        
+	        System.out.println("\nOllama Chat model Demo --------------------\n");
+	        ChatModel chat = new OllamaChatModel("llama3.2");
+	        System.out.println(chat.generate("In one sentence what is encapsulation in Java?"));
+	        
 	    }
 	    
 	    
