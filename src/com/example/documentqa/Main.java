@@ -32,12 +32,13 @@ public class Main {
 		scanner.close();
 		
 		
+		
 		// Run Semantic search: the vocabulary is built from the chunks, then each chunk is embedded once (Version 2)
 		EmbeddingModel model = new OllamaEmbeddingModel("nomic-embed-text");
 		SemanticSearchService semantic = new SemanticSearchService(model);
 		semantic.index(chunks);
 
-		List<EmbeddingScore> semanticResults = semantic.search(query, 5,-1);	// retune the minimum score as models rarely return 0.0
+		List<EmbeddingScore> semanticResults = semantic.search(query, 5, 0.5);	// retune the minimum score as models rarely return 0.0
 
 		System.out.println("\nSemantic search results for: " + query);
 		if (semanticResults.isEmpty()) {
@@ -49,6 +50,13 @@ public class Main {
 		    System.out.println(result.getChunk().getContent());
 			}
 		}
+		
+		PromptBuilder promptBuilder = new PromptBuilder();
+		ChatModel chat = new OllamaChatModel("llama3.2");
+		AnswerService answerService = new AnswerService(semantic, promptBuilder, chat);
+
+		System.out.println("\nThinking...");
+		System.out.println(answerService.answer(query));
 		
 			
 	}
