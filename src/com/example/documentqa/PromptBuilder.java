@@ -22,6 +22,9 @@ public class PromptBuilder {
 		    sb.append("\n\n");   
 		}
 		
+		sb.append("Question: ").append(question);
+		sb.append("\n\nAnswer:");
+		
 		return sb.toString();
 	}
 
