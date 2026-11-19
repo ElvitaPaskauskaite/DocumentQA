@@ -10,6 +10,6 @@ public class EmbeddingScore {
 	}
 	
 	public TextChunk getChunk() { return chunk; }
-	public double getSscore() { return score; }
-
+	public double getScore() { return score; }
+	
 }
