@@ -24,9 +24,6 @@ public class AnswerService {
 		
 		String prompt = promptBuilder.build(question, results);
 		
-		System.out.println("----- PROMPT -----");
-		System.out.println(prompt);
-		System.out.println("------------------");
 		return chatModel.generate(prompt);
 	}
 
