@@ -7,6 +7,8 @@ import java.util.ArrayList;
 public class Main {
 
 	public static void main(String[] args) throws Exception {
+		// Load settings from application.properties (in the project folder)
+		AppConfig config = new AppConfig("application.properties");
 
 		// Title banner
 		printLine();
@@ -21,7 +23,7 @@ public class Main {
 
 		// Load every .txt file in the documents folder
 		DocumentLoader loader = new DocumentLoader();
-		List<Document> documents = loader.loadFolder("documents");
+		List<Document> documents = loader.loadFolder(config.getDocumentsFolder());
 
 		// Split each document and collect ALL chunks in one list.
 		// Keys stay unique because each chunk carries its file name (e.g. git_notes.txt#2)
@@ -66,12 +68,12 @@ public class Main {
 		printLine();
 
 		// Each chunk is turned into a vector once, using the Ollama embedding model
-		EmbeddingModel model = new OllamaEmbeddingModel("nomic-embed-text");
+		EmbeddingModel model = new OllamaEmbeddingModel(config.getEmbeddingModel());
 		SemanticSearchService semantic = new SemanticSearchService(model, new InMemoryVectorStore());
 		semantic.index(chunks);
 
-		// Top 3 chunks, dropping anything scoring below 0.5
-		List<EmbeddingScore> semanticResults = semantic.search(query, 3, 0.5);
+		// Top-K chunks, dropping anything below the minimum score (from application.properties)
+		List<EmbeddingScore> semanticResults = semantic.search(query, config.getTopK(), config.getMinScore());
 
 		if (semanticResults.isEmpty()) {
 			System.out.println("  No relevant chunks found.");
@@ -90,8 +92,8 @@ public class Main {
 		printLine();
 
 		PromptBuilder promptBuilder = new PromptBuilder();
-		ChatModel chat = new OllamaChatModel("llama3.2");
-		AnswerService answerService = new AnswerService(semantic, promptBuilder, chat);
+		ChatModel chat = new OllamaChatModel(config.getChatModel());
+		AnswerService answerService = new AnswerService(semantic, promptBuilder, chat, config.getTopK(), config.getMinScore());
 
 		System.out.println("  Thinking... (this can take a few seconds)");
 		String answer = answerService.answer(query);
