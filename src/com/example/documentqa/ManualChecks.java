@@ -54,7 +54,7 @@ public class ManualChecks {
 	// CHECK 2: BagOfWordsEmbeddingModel
 	// Tests the word-counting embedder. No Ollama needed.
 	// ---------------------------------------------------------------
-	private static void checkBagOfWords() {
+	private static void checkBagOfWords() throws Exception {
 		printTitle("CHECK 2: BagOfWordsEmbeddingModel (word counts)");
 
 		// Two small chunks, as if the splitter had produced them
@@ -127,6 +127,7 @@ public class ManualChecks {
 		ChatModel chat = new OllamaChatModel("llama3.2");
 
 		// Expect one sensible sentence about encapsulation
+		System.out.println("What is encapsulation in Java?");
 		System.out.println(chat.generate("In one sentence what is encapsulation in Java?"));
 	}
 
