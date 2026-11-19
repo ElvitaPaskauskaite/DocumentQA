@@ -13,3 +13,9 @@ An interface defines a contract that classes can implement.
 A class is a blueprint for creating objects.
 
 An interface allows different classes to follow the same contract
+
+An embedding model converts each sentence into a numerical representation called a vector.
+
+A vector is an ordered list of numbers. In AI, vectors are used to represent information such as words, sentences, images, or documents.
+
+An API, or Application Programming Interface, is a set of rules and protocols that allows different software applications to communicate and share data with one another.
