@@ -67,7 +67,7 @@ public class Main {
 
 		// Each chunk is turned into a vector once, using the Ollama embedding model
 		EmbeddingModel model = new OllamaEmbeddingModel("nomic-embed-text");
-		SemanticSearchService semantic = new SemanticSearchService(model);
+		SemanticSearchService semantic = new SemanticSearchService(model, new InMemoryVectorStore());
 		semantic.index(chunks);
 
 		// Top 3 chunks, dropping anything scoring below 0.5
