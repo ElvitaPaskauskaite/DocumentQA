@@ -2,6 +2,7 @@ package com.example.documentqa;
 
 import java.util.List;
 import java.util.Scanner;
+import java.util.ArrayList;
 
 public class Main {
 
@@ -13,23 +14,31 @@ public class Main {
 		System.out.println("  Retrieval-Augmented Generation in Java");
 		printLine();
 
-		// Version 1: load the document and split it into chunks
+		// Load every document in the folder and split them all into chunks
 		System.out.println();
-		System.out.println("STEP 1: Loading and splitting the document (Version 1)");
+		System.out.println("STEP 1: Loading and splitting the documents");
 		printLine();
 
+		// Load every .txt file in the documents folder
 		DocumentLoader loader = new DocumentLoader();
-		Document document = loader.load("documents/java_notes.txt");
+		List<Document> documents = loader.loadFolder("documents");
 
+		// Split each document and collect ALL chunks in one list.
+		// Keys stay unique because each chunk carries its file name (e.g. git_notes.txt#2)
 		TextSplitter splitter = new TextSplitter();
-		List<TextChunk> chunks = splitter.split(document);
+		List<TextChunk> chunks = new ArrayList<>();
 
-		System.out.println("  File   : " + document.getTitle());
-		System.out.println("  Chunks : " + chunks.size() + " paragraphs");
+		for (Document document : documents) {
+			List<TextChunk> documentChunks = splitter.split(document);
+			chunks.addAll(documentChunks);
+			System.out.println("  File   : " + document.getTitle() + " (" + documentChunks.size() + " chunks)");
+		}
+
+		System.out.println("  Total  : " + chunks.size() + " chunks from " + documents.size() + " files");
 
 		// Ask the question
 		Scanner scanner = new Scanner(System.in);
-		System.out.print("\n  Enter a question about Java: ");
+		System.out.print("\n  Enter a question: ");
 		String query = scanner.nextLine();
 		scanner.close();
 

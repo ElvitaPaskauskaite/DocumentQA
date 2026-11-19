@@ -1,0 +1,11 @@
+Git is a version control system that records changes to files over time.
+
+A commit is a snapshot of the staged files, saved with a message describing the change.
+
+The git add command stages changes so they are included in the next commit.
+
+A branch is an independent line of development. The default branch is usually called main.
+
+The git push command uploads local commits to a remote repository such as GitHub.
+
+A merge combines the changes from one branch into another branch.

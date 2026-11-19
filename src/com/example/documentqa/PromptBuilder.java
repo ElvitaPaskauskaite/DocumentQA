@@ -4,7 +4,7 @@ import java.util.List;
 
 public class PromptBuilder {
 	// Add instructions for chat model
-	private static final String INSTRUCTIONS = "Answer the question in one or two complete sentences, using ONLY the context below.\nIf the answer is not found in the context say \"I dont know based on the text file.\" ";
+	private static final String INSTRUCTIONS = "Answer the question in one or two complete sentences, using ONLY the context below.\nIf the answer is not found in the context say \"I don't know based on the text file.\" ";
 	
 	public String build(String question, List<EmbeddingScore> results) {
 		
@@ -17,7 +17,7 @@ public class PromptBuilder {
 		for (EmbeddingScore result : results) {
 		    sb.append("[");  
 		    sb.append(result.getChunk().getKey());   // the chunk's id
-		    sb.append("]");  
+		    sb.append("] ");  
 		    sb.append(result.getChunk().getContent());  // the chunk's content
 		    sb.append("\n\n");   
 		}
