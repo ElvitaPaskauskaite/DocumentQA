@@ -23,7 +23,7 @@ public class TextSplitter {
             if (!section.trim().isEmpty()) {
             	// Create a textchunk containing id and text from the section
                 TextChunk chunk =
-                        new TextChunk(id, section.trim());
+                        new TextChunk(document.getTitle(), id, section.trim());
                 // add new chunk to list
                 chunks.add(chunk);
                 // Increment id

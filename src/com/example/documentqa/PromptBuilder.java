@@ -15,8 +15,8 @@ public class PromptBuilder {
 		sb.append("\n\nContext:\n");
 		
 		for (EmbeddingScore result : results) {
-		    sb.append("[Chunk");  
-		    sb.append(result.getChunk().getId());   // the chunk's id
+		    sb.append("[");  
+		    sb.append(result.getChunk().getKey());   // the chunk's id
 		    sb.append("]");  
 		    sb.append(result.getChunk().getContent());  // the chunk's content
 		    sb.append("\n\n");   

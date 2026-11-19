@@ -8,11 +8,11 @@ import java.util.Map;
 
 public class SemanticSearchService {
 	
-	// Can swap BagOfWords for Ollama later without chaning this class
+	// Can swap BagOfWords for Ollama later without changing this class
 	private final EmbeddingModel model;
 	
 	// Maps a chunk id to its vector, so each chunk is embedded only once
-	private final Map<Integer, double[]> chunkVectors = new HashMap<>();
+	private final Map<String, double[]> chunkVectors = new HashMap<>();
 	
 	// The chunks indexed, kept so search can return them.
 	private final List<TextChunk> indexedChunks = new ArrayList<>();
@@ -29,7 +29,7 @@ public class SemanticSearchService {
 		
 		for (TextChunk chunk : chunks) {
 			double[] vector = model.embed(chunk.getContent()); // Turn text to numbers
-			chunkVectors.put(chunk.getId(), vector);
+			chunkVectors.put(chunk.getKey(), vector);
 			indexedChunks.add(chunk);
 		}
 	}
@@ -48,7 +48,7 @@ public class SemanticSearchService {
         List<EmbeddingScore> scored = new ArrayList<>();
         
         for (TextChunk chunk : indexedChunks) {
-            double[] chunkVector = chunkVectors.get(chunk.getId());
+        	double[] chunkVector = chunkVectors.get(chunk.getKey());
 
             // VectorMath does the comparison: one number per chunk.
             double score = VectorMath.cosineSimilarity(queryVector, chunkVector);
