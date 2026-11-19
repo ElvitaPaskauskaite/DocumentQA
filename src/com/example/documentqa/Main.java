@@ -46,7 +46,7 @@ public class Main {
 		} else {
 			System.out.println("  Found " + keywordResults.size() + " matching chunk(s):");
 			for (TextChunk chunk : keywordResults) {
-				System.out.println("\n  [Chunk " + chunk.getId() + "]");
+				System.out.println("\n  [Chunk " + chunk.getKey() + "]");
 				System.out.println("  " + chunk.getContent());
 			}
 		}
@@ -69,7 +69,7 @@ public class Main {
 		} else {
 			System.out.println("  Top " + semanticResults.size() + " most relevant chunks:");
 			for (EmbeddingScore result : semanticResults) {
-				System.out.println("\n  [Chunk " + result.getChunk().getId() + "]  score: "
+				System.out.println("\n  [Chunk " + result.getChunk().getKey() + "]  score: "
 						+ String.format("%.3f", result.getScore()));
 				System.out.println("  " + result.getChunk().getContent());
 			}
