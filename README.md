@@ -9,6 +9,9 @@ The goal of this project is to build a system that can
 answer questions based on information contained within
 provided documents.
 
+## How it works
+question → semantic search → top chunks → prompt → LLM → answer
+
 ## Current Features
 
 - Basic document loading
@@ -16,10 +19,10 @@ provided documents.
 - Keyword search that returns matching chunks
 - Cosine similarity ('VectorMath') for comparing embedding vector
 - 'EmbeddingMOdel' interface with two implementations (BagOfWords and Ollama)
+- LLM answers from retrieved chunks
 
 ## Planned Features
 
-- LLM integration
 - PDF support
 - REST API
 
@@ -27,7 +30,7 @@ provided documents.
 
 1. Basic Java - load text, chunk keyword search (done)
 2. Semantic search - embedding and vector similarity (done)
-3. LLM integration - generate answers from retrieved chunks (RAG)
+3. LLM integration - generate answers from retrieved chunks (RAG) (done)
 4. Spring Boot API - 'POST /documents' and 'POST /questions'
 5. Production Features - PDF upload upload, PostGreSQL, pgvector, Docker tests, frontend
 
@@ -38,3 +41,4 @@ provided documents.
 -[Ollama](https://ollama.com) installed and running, with the embedding model pulled:
 
 ollama pull nomic-embed-text
+ollama pull llama3.2
