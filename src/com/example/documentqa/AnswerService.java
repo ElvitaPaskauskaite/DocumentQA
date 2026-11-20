@@ -21,17 +21,21 @@ public class AnswerService {
 		this.minScore = minScore;
 	}
 
-	public String answer(String question) throws Exception {
+	// Returns the answer text AND the chunks it was based on,
+	// so callers can show sources without searching a second time
+	public Answer answer(String question) throws Exception {
 
 		List<EmbeddingScore> results = search.search(question, topK, minScore);
 
-		// Nothing relevant: don't call the LLM at all
+		// Nothing relevant: don't call the LLM at all, and there are no sources
 		if (results.isEmpty()) {
-			return "I couldn't find anything relevant in the documents.";
+			return new Answer("I couldn't find anything relevant in the documents.", List.of());
 		}
 
 		String prompt = promptBuilder.build(question, results);
+		String text = chatModel.generate(prompt);
 
-		return chatModel.generate(prompt);
+		// Keep the chunks the LLM saw, together with what it said
+		return new Answer(text, results);
 	}
 }

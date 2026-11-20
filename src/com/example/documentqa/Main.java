@@ -72,41 +72,64 @@ public class Main {
 		SemanticSearchService semantic = new SemanticSearchService(model, new InMemoryVectorStore());
 		semantic.index(chunks);
 
-		// Top-K chunks, dropping anything below the minimum score (from application.properties)
-		List<EmbeddingScore> semanticResults = semantic.search(query, config.getTopK(), config.getMinScore());
-
-		if (semanticResults.isEmpty()) {
-			System.out.println("  No relevant chunks found.");
-		} else {
-			System.out.println("  Top " + semanticResults.size() + " most relevant chunks:");
-			for (EmbeddingScore result : semanticResults) {
-				System.out.println("\n  [Chunk " + result.getChunk().getKey() + "]  score: "
-						+ String.format("%.3f", result.getScore()));
-				System.out.println("  " + result.getChunk().getContent());
-			}
-		}
-
-		// Version 3: the LLM writes the answer
-		System.out.println();
-		System.out.println("STEP 4: Generating an answer (Version 3: retrieved chunks + LLM)");
-		printLine();
-
+		// Build the answer pipeline: search -> prompt -> LLM
 		PromptBuilder promptBuilder = new PromptBuilder();
 		ChatModel chat = new OllamaChatModel(config.getChatModel());
 		AnswerService answerService = new AnswerService(semantic, promptBuilder, chat, config.getTopK(), config.getMinScore());
 
-		System.out.println("  Thinking... (this can take a few seconds)");
-		String answer = answerService.answer(query);
+		// ONE search: AnswerService searches, calls the LLM, and returns the chunks it used
+		System.out.println("  Searching and generating an answer... (this can take a few seconds)");
+		Answer answer = answerService.answer(query);
 
+		// Show the retrieved chunks. They come from the Answer, so there's no second search
+		if (!answer.hasSources()) {
+			System.out.println("  No relevant chunks found.");
+		} else {
+			System.out.println("  Top " + answer.sources().size() + " most relevant chunks:");
+			for (EmbeddingScore source : answer.sources()) {
+				System.out.println("\n  [Chunk " + source.getChunk().getKey() + "]  score: "
+						+ String.format("%.3f", source.getScore()));
+				System.out.println("  " + source.getChunk().getContent());
+			}
+		}
+
+		// Version 3: the LLM's answer, followed by where it came from
 		System.out.println();
+		System.out.println("STEP 4: The answer (Version 3: retrieved chunks + LLM)");
 		printLine();
 		System.out.println("  QUESTION: " + query);
-		System.out.println("  ANSWER:   " + answer);
+		System.out.println("  ANSWER:   " + answer.text());
+
+		// Sources: what the answer cited, then what was retrieved but not cited
+		if (answer.hasSources()) {
+			System.out.println();
+			if (answer.citedSources().isEmpty()) {
+				System.out.println("  Sources: none cited");
+			} else {
+				System.out.println("  Sources:");
+				for (EmbeddingScore source : answer.citedSources()) {
+					printSource(source);
+				}
+			}
+
+			// Shown so problems like the €4,000 case are easy to spot
+			if (!answer.uncitedSources().isEmpty()) {
+				System.out.println("  Retrieved but not cited:");
+				for (EmbeddingScore source : answer.uncitedSources()) {
+					printSource(source);
+				}
+			}
+		}
 		printLine();
 	}
 
 	private static void printLine() {
 		System.out.println("----------------------------------------------------------------------");
+	}
+	// One line per source, e.g. "    travel_expenses_policy.txt#5  (0.811)"
+	private static void printSource(EmbeddingScore source) {
+		System.out.println("    " + source.getChunk().getKey()
+				+ "  (" + String.format("%.3f", source.getScore()) + ")");
 	}
 }
 	

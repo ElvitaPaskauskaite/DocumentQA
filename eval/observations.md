@@ -50,6 +50,10 @@ two separate steps, and either can fail.** So I measure them separately.
   - `procurement_policy.txt#5` 0.569: €10,000 or more, tender
 - **Answer:** "one quote" in all 3 runs. One run said €4,000 "falls under
   the category of purchases under €1,000".
+- **With citations turned on (20 Nov 2026), 2 runs:**
+  - Run 1: "one quote", cited `[procurement_policy.txt#3]`, so the citation shows which paragraph the wrong answer came from.
+  - Run 2: "two quotes" (a number not in any document) and **no citation at all**, despite the prompt asking for one. The output showed "Sources: none cited", which flags the answer as ungrounded.
+- **Lesson:** citations don't make the model correct, but they make a wrong or invented answer visible. A factual answer with no citation should not be trusted.
 - **Why:** the search worked, since the right paragraph came first. The
   model (llama3.2, a small model) then got the comparison wrong. The
   wording changed between runs but the mistake didn't, so randomness isn't
