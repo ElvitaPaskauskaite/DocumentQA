@@ -33,4 +33,5 @@ public class AppConfig {
 	public String getChatModel()       { return get("ollama.chat.model"); }
 	public int getTopK()               { return Integer.parseInt(get("search.top-k")); }
 	public double getMinScore()        { return Double.parseDouble(get("search.min-score")); }
+	public String getEmbeddingCacheFile() { return get("embeddings.cache-file"); }
 }

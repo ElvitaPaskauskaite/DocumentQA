@@ -3,6 +3,7 @@ package com.example.documentqa;
 import java.util.List;
 import java.util.Scanner;
 import java.util.ArrayList;
+import java.nio.file.Path;
 
 public class Main {
 
@@ -66,11 +67,25 @@ public class Main {
 		System.out.println();
 		System.out.println("STEP 3: Semantic search (Version 2: embeddings + cosine similarity)");
 		printLine();
-
-		// Each chunk is turned into a vector once, using the Ollama embedding model
-		EmbeddingModel model = new OllamaEmbeddingModel(config.getEmbeddingModel());
+		
+		// The real model, wrapped in a cache: only new or changed chunks are sent to Ollama.
+		// The variable type is CachingEmbeddingModel (not EmbeddingModel) because Main needs
+		// save() and the hit/miss counts, which aren't part of the interface.
+		EmbeddingModel ollama = new OllamaEmbeddingModel(config.getEmbeddingModel());
+		CachingEmbeddingModel model = new CachingEmbeddingModel(
+				ollama, config.getEmbeddingModel(), Path.of(config.getEmbeddingCacheFile()));
 		SemanticSearchService semantic = new SemanticSearchService(model, new InMemoryVectorStore());
+
+		// Time the indexing, so the effect of the cache can be measured
+		long start = System.nanoTime();
 		semantic.index(chunks);
+		long indexMillis = (System.nanoTime() - start) / 1_000_000;   // nanoseconds -> milliseconds
+
+		// Write the vectors to disk for the next run
+		model.save();
+
+		System.out.println("  Indexed " + chunks.size() + " chunks in " + indexMillis + " ms ("
+				+ model.getHits() + " from cache, " + model.getMisses() + " newly embedded)");
 
 		// Build the answer pipeline: search -> prompt -> LLM
 		PromptBuilder promptBuilder = new PromptBuilder();
