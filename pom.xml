@@ -3,14 +3,29 @@
   <groupId>DocumentQA</groupId>
   <artifactId>DocumentQA</artifactId>
   <version>0.0.1-SNAPSHOT</version>
-    <dependencies>
+
+  <properties>
+    <!-- Read source files as UTF-8 everywhere (Terminal, CI), not just in Eclipse. Needed for € -->
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+  </properties>
+
+  <dependencies>
     <!-- Jackson: builds and reads JSON for the Ollama API calls -->
     <dependency>
       <groupId>com.fasterxml.jackson.core</groupId>
       <artifactId>jackson-databind</artifactId>
       <version>2.17.2</version>
     </dependency>
+
+    <!-- JUnit 5: test framework. "test" scope = only for src/test/java, never in the app -->
+    <dependency>
+      <groupId>org.junit.jupiter</groupId>
+      <artifactId>junit-jupiter</artifactId>
+      <version>5.11.4</version>
+      <scope>test</scope>
+    </dependency>
   </dependencies>
+
   <build>
     <plugins>
       <plugin>
@@ -19,6 +34,12 @@
         <configuration>
           <release>21</release>
         </configuration>
+      </plugin>
+
+      <!-- Surefire runs the tests in "mvn test". 3.x is needed to find JUnit 5 tests -->
+      <plugin>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <version>3.5.2</version>
       </plugin>
     </plugins>
   </build>
