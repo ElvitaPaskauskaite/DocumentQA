@@ -28,7 +28,8 @@ public class Main {
 
 		// Split each document and collect ALL chunks in one list.
 		// Keys stay unique because each chunk carries its file name (e.g. git_notes.txt#2)
-		TextSplitter splitter = new TextSplitter();
+		// Chunk size limits come from application.properties
+		TextSplitter splitter = new TextSplitter(config.getChunkMaxWords(), config.getChunkOverlapWords());
 		List<TextChunk> chunks = new ArrayList<>();
 
 		for (Document document : documents) {

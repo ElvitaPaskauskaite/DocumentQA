@@ -34,4 +34,6 @@ public class AppConfig {
 	public int getTopK()               { return Integer.parseInt(get("search.top-k")); }
 	public double getMinScore()        { return Double.parseDouble(get("search.min-score")); }
 	public String getEmbeddingCacheFile() { return get("embeddings.cache-file"); }
+	public int getChunkMaxWords()      { return Integer.parseInt(get("chunk.max-words")); }
+	public int getChunkOverlapWords()  { return Integer.parseInt(get("chunk.overlap-words")); }
 }
