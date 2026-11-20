@@ -1,0 +1,25 @@
+Acme Ltd is a fictional company. This Travel and Expenses Policy was written to test the DocumentQA project and does not describe a real organisation.
+
+The Acme Ltd Travel and Expenses Policy is owned by the Finance department. Version 2.1 took effect on 1 January 2026 and applies to all employees and contractors who travel on company business.
+
+Business trips outside Ireland must be approved by the employee's line manager at least 10 working days before the trip. Business trips within Ireland do not need advance approval.
+
+Flights under 6 hours must be booked in economy class. Premium economy is allowed for flights of 6 hours or more. Business class is only allowed with written approval from the Chief Financial Officer (CFO).
+
+Hotel costs are reimbursed up to €165 per night in Ireland and up to €215 per night outside Ireland. Any hotel cost above the nightly limit is paid by the employee unless the line manager approves it in writing before the trip.
+
+The meal allowance for business travel is €62 per day. Alcohol is never reimbursed under the Travel and Expenses Policy.
+
+Employees who use their own car for business travel are reimbursed at €0.43 per kilometre. Travel between home and the employee's usual office is not business travel and is not reimbursed.
+
+Taxis are reimbursed only for journeys after 22:00 or when no public transport is available. For all other journeys, employees should use public transport.
+
+Expense claims must be submitted through the finance portal within 30 days of returning from the trip. Claims submitted after 30 days are only paid with approval from the Finance department.
+
+An itemised receipt is required for every expense over €25. Card payment slips that do not list the items bought are not accepted as receipts.
+
+If a receipt is lost, the employee may submit a signed lost-receipt declaration instead. Each employee may use a lost-receipt declaration at most once per quarter.
+
+Approved expense claims are paid with the next monthly payroll.
+
+Questions about the Travel and Expenses Policy should be sent to finance@acme.example.

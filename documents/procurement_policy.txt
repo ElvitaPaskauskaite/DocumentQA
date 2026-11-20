@@ -1,0 +1,25 @@
+Acme Ltd is a fictional company. This Procurement Policy was written to test the DocumentQA project and does not describe a real organisation.
+
+The Acme Ltd Procurement Policy is owned by the Procurement team within Finance. Version 1.4 took effect on 1 March 2026 and applies to all purchases of goods and services made on behalf of Acme Ltd.
+
+Purchases under €1,000 need one quote and approval from the employee's line manager.
+
+Purchases of €1,000 or more but under €10,000 need three written quotes from different suppliers and approval from the head of the department.
+
+Purchases of €10,000 or more must go through a formal tender process and need approval from both the Finance Director and the Chief Financial Officer (CFO).
+
+A purchase order (PO) must be raised and approved before anything is ordered from a supplier. Acme Ltd does not pay invoices that do not include a valid purchase order number.
+
+Splitting one purchase into several smaller orders to stay below an approval threshold is not allowed and is treated as a breach of the Procurement Policy.
+
+New suppliers must be added to the approved supplier list before any order is placed. Adding a new supplier takes 5 working days and requires a valid tax clearance certificate.
+
+All software and SaaS (software as a service) purchases must be reviewed by the IT Security team before they are bought, whatever the amount.
+
+Acme Ltd pays supplier invoices within 30 days of the invoice date.
+
+Employees may accept a gift from a supplier only if its value is €50 or less. Every supplier gift must be recorded in the gifts register, whatever its value.
+
+A company credit card can only be used for single purchases under €500. Each company credit card has a monthly spending limit of €2,000.
+
+Questions about the Procurement Policy should be sent to procurement@acme.example.

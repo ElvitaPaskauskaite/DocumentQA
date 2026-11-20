@@ -19,7 +19,7 @@ public class TextSplitter {
         
         // Go through each section of the document one at a time
         for (String section : sections) {
-        	// Dont create new sections for empty sections
+        	// Don't create empty chunks
             if (!section.trim().isEmpty()) {
             	// Create a textchunk containing id and text from the section
                 TextChunk chunk =

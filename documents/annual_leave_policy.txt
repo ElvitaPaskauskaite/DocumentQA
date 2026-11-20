@@ -1,0 +1,25 @@
+Acme Ltd is a fictional company. This Annual Leave Policy was written to test the DocumentQA project and does not describe a real organisation.
+
+The Acme Ltd Annual Leave Policy is owned by the HR department. Version 3.0 took effect on 1 January 2026 and applies to all employees on Acme Ltd employment contracts. Contractors are not covered by the Annual Leave Policy.
+
+Full-time employees receive 23 days of annual leave per leave year. Irish public holidays are given in addition to annual leave.
+
+Employees receive one extra day of annual leave for every 5 completed years of service, up to a maximum of 26 days of annual leave per leave year.
+
+Part-time employees receive annual leave pro rata. For example, an employee who works 3 days a week receives 3/5 of the full-time entitlement, which is 13.8 days.
+
+The annual leave year runs from 1 January to 31 December.
+
+Up to 5 unused days of annual leave may be carried over into the next leave year. Carried-over days must be taken by 31 March, or they are lost.
+
+Annual leave is requested through the HR portal. Requests for more than 3 consecutive days of annual leave must be made at least 2 weeks in advance.
+
+Taking more than 10 consecutive working days of annual leave needs approval from a director, in addition to the line manager.
+
+Employees in the Finance team cannot take annual leave during the first 5 working days of each quarter, because of the quarterly financial close.
+
+If an employee is sick during annual leave and provides a medical certificate, the sick days are not counted as annual leave and are returned to the employee's leave balance.
+
+When an employee leaves Acme Ltd, any unused annual leave is paid in the final salary payment.
+
+Questions about the Annual Leave Policy should be sent to hr@acme.example.
