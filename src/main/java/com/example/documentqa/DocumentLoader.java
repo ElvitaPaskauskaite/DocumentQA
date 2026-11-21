@@ -17,7 +17,7 @@ public class DocumentLoader {
 		// Read the whole file as text
 		String content = Files.readString(path);
 		
-		// Keep only the last part of the path: "documents/java_notes.txt" -> "java_notes.txt"
+		// Keep only the last part of the path: "documents/procurement_policy.txt" -> "procurement_policy.txt"
 		// getFileName() returns a Path, so toString() turns it back into a String
 		String title = path.getFileName().toString();
 		

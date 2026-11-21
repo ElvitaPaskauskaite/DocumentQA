@@ -24,7 +24,7 @@ Each entry: symptom → cause → fix → lesson. Added when the bug is fixed.
 - **Symptom:** GitHub had code that didn't build.
 - **Cause:** getter typo `getSscore`, pushed without checking.
 - **Fix:** corrected the typo.
-- **Lesson:** check the Problems tab and `git status` before pushing; CI will catch this automatically (Phase 3).
+- **Lesson:** check the Problems tab and `git status` before pushing; CI will catch this automatically.
 
 ## 5. Vectors overwritten with multiple documents
 - **Symptom:** none yet. Spotted before adding a second document: every file numbers its chunks from 1, so two files would produce the same id.
