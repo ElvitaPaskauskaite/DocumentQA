@@ -7,13 +7,13 @@ import java.util.List;
 import java.util.Map;
 
 // Keeps every vector in a Map in memory. Simple and fast for a few hundred chunks.
-// Everything is lost when the program stops (Phase 2 adds a cache file for that).
+// Everything is lost when the program stops (CachingEmbeddingModel saves the embeddings to a file, so they don't need recomputing)
 public class InMemoryVectorStore implements VectorStore {
 
 	// One stored item: the chunk plus its vector, kept together
 	private record Entry(TextChunk chunk, double[] vector) {}
 
-	// Keyed by chunk.getKey() (e.g. "git_notes.txt#5"), so keys are unique across files.
+	// Keyed by chunk.getKey() (e.g. "travel_expenses_policy.txt#5"), so keys are unique across files.
 	// LinkedHashMap keeps insertion order, so results are repeatable when scores tie.
 	private final Map<String, Entry> entries = new LinkedHashMap<>();
 
