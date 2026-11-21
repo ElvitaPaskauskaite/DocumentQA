@@ -1,0 +1,27 @@
+# Runs the test suite on GitHub's servers for every push and pull request.
+# Ollama is not installed here, so OllamaIntegrationTest reports its tests as skipped.
+name: Tests
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      # Download the repository onto the build machine
+      - uses: actions/checkout@v5
+
+      # Install Java 21 (the version in pom.xml) and cache Maven downloads between runs
+      - uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: '21'
+          cache: maven
+
+      # -B (batch mode) keeps the log readable by hiding download progress bars
+      - name: Run tests
+        run: mvn -B test
