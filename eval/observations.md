@@ -40,6 +40,9 @@ two separate steps, and either can fail.** So I measure them separately.
   by a setting called temperature, which isn't 0 by default.
 - **Ideas to test:** set temperature to 0 so the same question gives the
   same answer. That makes test results repeatable.
+  - **Result (21 Nov 2026):** set temperature to 0 in `OllamaChatModel`. The
+  €4,000 laptop question then gave word-for-word the same answer and
+  citation in 3 out of 3 runs (see #3).
 
 ## 3. The model compared amounts wrongly (20 Nov 2026)
 - **Question:** "How many quotes do I need for a €4,000 laptop?"
@@ -58,6 +61,10 @@ two separate steps, and either can fail.** So I measure them separately.
   model (llama3.2, a small model) then got the comparison wrong. The
   wording changed between runs but the mistake didn't, so randomness isn't
   the cause, and setting temperature to 0 won't fix it.
+  - **With temperature 0 (21 Nov 2026), 3 runs:** identical every time:
+  "You need one quote for a purchase under €1,000, which includes a €4,000
+  laptop." cited `[procurement_policy.txt#3]`. The mistake is now repeatable,
+  which confirms it's the model's comparison, not randomness.
 - **Ideas to test:** tell the model to check the amount against each range;
   retrieve fewer paragraphs; try a larger model.
 

@@ -18,6 +18,10 @@ public class OllamaChatModel implements ChatModel {
 	// Which model to use. Passed in so its easy to swap
 	private final String modelName;
 	
+	// Fixed at 0 so answers are repeatable; a score change should come from
+	// a change I made (prompt, top-k, chunk size), not from random sampling.
+	private static final double TEMPERATURE = 0.0;
+	
 	// Send the HTTP requests
     private final HttpClient client = HttpClient.newHttpClient();
     private final ObjectMapper mapper = new ObjectMapper();	
@@ -37,6 +41,12 @@ public class OllamaChatModel implements ChatModel {
         ObjectNode userMessage = messages.addObject();
         userMessage.put("role", "user");
         userMessage.put("content", prompt);
+        
+        // Ollama reads sampling settings from a nested "options" object.
+        // Temperature 0 makes the model pick its most likely word each time,
+        // so the same prompt gives the same answer and evaluation runs are comparable.
+        ObjectNode options = body.putObject("options");
+        options.put("temperature", TEMPERATURE);
         
         // 2. Wrap it in an HTTP POST request
         HttpRequest request = HttpRequest.newBuilder()
