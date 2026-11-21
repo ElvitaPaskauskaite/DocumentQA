@@ -1,5 +1,7 @@
 # Document Q&A System
 
+![Tests](https://github.com/ElvitaPaskauskaite/DocumentQA/actions/workflows/ci.yml/badge.svg)
+
 A Java-based document question-answering system built as a
 learning project in Object-Oriented Programming.
 
@@ -14,12 +16,16 @@ question → semantic search → top chunks → prompt → LLM → answer
 
 ## Current Features
 
-- Basic document loading
-- Splits document into paragraph_based chunks
-- Keyword search that returns matching chunks
-- Cosine similarity ('VectorMath') for comparing embedding vector
-- 'EmbeddingMOdel' interface with two implementations (BagOfWords and Ollama)
-- LLM answers from retrieved chunks
+- Loads every `.txt` file in a folder (`documents/`)
+- Splits documents into paragraph chunks, with a maximum size and overlapping word windows for long paragraphs
+- Keyword search (first version, kept for comparison)
+- Semantic search: embeddings from Ollama (`nomic-embed-text`) compared with hand-written cosine similarity
+- `EmbeddingModel`, `ChatModel` and `VectorStore` interfaces, so implementations can be swapped
+- Answers from `llama3.2` using only the retrieved chunks, with source citations, and "I don't know" when the answer is not in the documents
+- Embedding cache saved to a JSON file (indexing 39 chunks: 1136 ms without cache, 2 ms with cache, one run on my laptop)
+- Settings in `application.properties`
+
+The example documents are fictional company policies for "Acme Ltd".
 
 ## Planned Features
 
@@ -36,9 +42,19 @@ question → semantic search → top chunks → prompt → LLM → answer
 
 ## Technologies and requirements
 
-- Java+ and Maven
-- Git / GitHub
--[Ollama](https://ollama.com) installed and running, with the embedding model pulled:
+- Java 21 and Maven
+- JUnit 5 for tests, GitHub Actions for continuous integration
+- [Ollama](https://ollama.com) installed and running, with the models pulled:
 
+```bash
 ollama pull nomic-embed-text
 ollama pull llama3.2
+```
+
+## Running the tests
+
+```bash
+mvn test
+```
+
+74 tests: 71 unit tests use test doubles instead of Ollama, so they run anywhere, including on GitHub Actions. 3 integration tests call the real Ollama server and are skipped when it is not running.
