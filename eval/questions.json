@@ -1,0 +1,162 @@
+[
+  {
+    "id": "proc-01",
+    "question": "How many quotes do I need for a €4,000 laptop?",
+    "answerable": true,
+    "expectedSources": ["procurement_policy.txt#4"],
+    "expectedFacts": [["three", "3"]],
+    "tests": "Comparing an amount against ranges; known failure (observation 3)"
+  },
+  {
+    "id": "proc-02",
+    "question": "How many quotes do I need for a purchase of exactly €1,000?",
+    "answerable": true,
+    "expectedSources": ["procurement_policy.txt#4"],
+    "expectedFacts": [["three", "3"]],
+    "tests": "Boundary: €1,000 is in the 'or more' range, not 'under €1,000'"
+  },
+  {
+    "id": "proc-03",
+    "question": "Who needs to approve a €600 office chair?",
+    "answerable": true,
+    "expectedSources": ["procurement_policy.txt#3"],
+    "expectedFacts": [["line manager"]],
+    "tests": "Simple lookup of the lowest range"
+  },
+  {
+    "id": "proc-04",
+    "question": "What process applies to a €25,000 purchase?",
+    "answerable": true,
+    "expectedSources": ["procurement_policy.txt#5"],
+    "expectedFacts": [["tender"]],
+    "tests": "Highest range"
+  },
+  {
+    "id": "proc-05",
+    "question": "Can I accept a gift worth €80 from a supplier?",
+    "answerable": true,
+    "expectedSources": ["procurement_policy.txt#11"],
+    "expectedFacts": [["50"]],
+    "tests": "Yes/no answer that depends on a limit"
+  },
+  {
+    "id": "travel-01",
+    "question": "What is the hotel limit outside Ireland?",
+    "answerable": true,
+    "expectedSources": ["travel_expenses_policy.txt#5"],
+    "expectedFacts": [["215"]],
+    "tests": "Known good answer (cited #5 by hand)"
+  },
+  {
+    "id": "travel-02",
+    "question": "What is the daily meal allowance when travelling for work?",
+    "answerable": true,
+    "expectedSources": ["travel_expenses_policy.txt#6"],
+    "expectedFacts": [["62"]],
+    "tests": "Simple numeric lookup"
+  },
+  {
+    "id": "travel-03",
+    "question": "How much is mileage paid per kilometre if I use my own car?",
+    "answerable": true,
+    "expectedSources": ["travel_expenses_policy.txt#7"],
+    "expectedFacts": [["0.43"]],
+    "tests": "Different wording from the document ('mileage' is not in the text)"
+  },
+  {
+    "id": "travel-04",
+    "question": "How long do I have to submit an expense claim after a trip?",
+    "answerable": true,
+    "expectedSources": ["travel_expenses_policy.txt#9"],
+    "expectedFacts": [["30"]],
+    "tests": "Deadline lookup"
+  },
+  {
+    "id": "travel-05",
+    "question": "Which class can I book for a 4-hour flight?",
+    "answerable": true,
+    "expectedSources": ["travel_expenses_policy.txt#4"],
+    "expectedFacts": [["economy"]],
+    "tests": "Comparing a duration against the 6-hour rule"
+  },
+  {
+    "id": "leave-01",
+    "question": "How many days of annual leave do full-time employees get?",
+    "answerable": true,
+    "expectedSources": ["annual_leave_policy.txt#3"],
+    "expectedFacts": [["23"]],
+    "tests": "Simple numeric lookup"
+  },
+  {
+    "id": "leave-02",
+    "question": "Can I carry unused annual leave into next year?",
+    "answerable": true,
+    "expectedSources": ["annual_leave_policy.txt#7"],
+    "expectedFacts": [["5", "five"], ["31 march"]],
+    "tests": "Answer needs two facts from one paragraph"
+  },
+  {
+    "id": "leave-03",
+    "question": "How many days of annual leave does someone working 3 days a week get?",
+    "answerable": true,
+    "expectedSources": ["annual_leave_policy.txt#5"],
+    "expectedFacts": [["13.8"]],
+    "tests": "Pro-rata rule with a worked example in the text"
+  },
+  {
+    "id": "leave-04",
+    "question": "Can a part-time employee in the Finance team take annual leave on 2 January?",
+    "answerable": true,
+    "expectedSources": ["annual_leave_policy.txt#10"],
+    "expectedFacts": [["cannot", "can't", "not"]],
+    "tests": "'Part-time' is a distractor; the Finance quarter-close rule decides it"
+  },
+  {
+    "id": "leave-05",
+    "question": "What happens to my annual leave if I get sick on holiday and have a medical certificate?",
+    "answerable": true,
+    "expectedSources": ["annual_leave_policy.txt#11"],
+    "expectedFacts": [["returned", "not counted"]],
+    "tests": "Everyday wording ('holiday') for 'annual leave'"
+  },
+  {
+    "id": "none-01",
+    "question": "What is the parental leave policy?",
+    "answerable": false,
+    "expectedSources": [],
+    "expectedFacts": [],
+    "tests": "Header and contact chunks pass min-score (observation 4)"
+  },
+  {
+    "id": "none-02",
+    "question": "How many days a week can I work from home?",
+    "answerable": false,
+    "expectedSources": [],
+    "expectedFacts": [],
+    "tests": "No remote-working policy exists"
+  },
+  {
+    "id": "none-03",
+    "question": "How much does Acme contribute to my pension?",
+    "answerable": false,
+    "expectedSources": [],
+    "expectedFacts": [],
+    "tests": "No pension policy exists"
+  },
+  {
+    "id": "none-04",
+    "question": "What is my yearly training budget?",
+    "answerable": false,
+    "expectedSources": [],
+    "expectedFacts": [],
+    "tests": "'Budget' may pull in money-related chunks"
+  },
+  {
+    "id": "none-05",
+    "question": "Can I book a first-class train ticket?",
+    "answerable": false,
+    "expectedSources": [],
+    "expectedFacts": [],
+    "tests": "Near miss: travel classes are only defined for flights"
+  }
+]
