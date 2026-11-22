@@ -100,6 +100,27 @@ Two runs gave word-for-word identical answers.
 
 **Decision:** nomic-embed-text stays. The baseline exists to show what the embedding model adds: +5 questions retrieved and +5 answered correctly over the fairest bag-of-words run.
 
+## Held-out check (final setup, run once)
+
+**Setup:** the final configuration: Experiment 1 (nomic-embed-text, llama3.2 at temperature 0, top-k 3, min-score 0.5, comparison prompt line). Questions: `heldout.json`, 5 questions on rules the main set doesn't use, never used for tuning.
+
+| Measure | Main set (by hand) | Held-out, scorer | Held-out, by hand |
+|---|---|---|---|
+| Expected chunk retrieved (top 3) | 15/15 | 4/4 | 4/4 |
+| Expected chunk cited | 12/15 | 4/4 | 4/4 |
+| Answer correct | 11/15 | 4/4 | 2/4 |
+| Unanswerable question correctly refused | 5/5 | 1/1 | 1/1 |
+
+**Failures:** held-01 said a €700 purchase is "below the €500 limit"; held-03 said a taxi at 23:30 can't be claimed because taxis are only reimbursed "after 22:00". Both are comparison errors, the same type as on the main set. held-04 got a two-step sum right (23 + 2 = 25) and held-02 worked out that Germany is outside Ireland.
+
+**Conclusion:** retrieval holds up on unseen questions. The weak point on both sets is the model comparing an amount or time with a rule, and the prompt line did not fix that in general. Four answerable questions are too few to measure overfitting on their own; the value of this check is that it shows the same pattern as the main set.
+
+## What I'd improve next
+
+- **Scorer:** the keyword check marked a wrong yes/no answer as correct 3 times (proc-05 with llama3.1:8b, held-01, held-03), because the number appears whether the answer is yes or no. An `expectedAnswer` field (yes/no) would catch this.
+- **Comparisons:** try a model that is better at arithmetic, or pre-extract amounts and dates in code and compare them there, instead of asking the model.
+- **More unanswerable questions**, so that excluding header paragraphs and tuning min-score can be measured.
+
 ## Not tested
 
 - **Leaving header and contact paragraphs out of the index, and tuning min-score.** Refusals are already 5/5 and retrieval 15/15 on this question set, so neither change could show a measurable gain. They would need more unanswerable questions that currently slip through.
