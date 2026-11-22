@@ -1,0 +1,42 @@
+[
+  {
+    "id": "held-01",
+    "question": "Can I use the company credit card for a €700 purchase?",
+    "answerable": true,
+    "expectedSources": ["procurement_policy.txt#12"],
+    "expectedFacts": [["500"]],
+    "tests": "Comparing an amount with a limit, on a rule not used for tuning"
+  },
+  {
+    "id": "held-02",
+    "question": "How far in advance does a business trip to Germany need to be approved?",
+    "answerable": true,
+    "expectedSources": ["travel_expenses_policy.txt#3"],
+    "expectedFacts": [["10"]],
+    "tests": "The policy says 'outside Ireland', never 'Germany'"
+  },
+  {
+    "id": "held-03",
+    "question": "Can I claim a taxi home at 23:30 after a work event?",
+    "answerable": true,
+    "expectedSources": ["travel_expenses_policy.txt#8"],
+    "expectedFacts": [["22:00", "10 pm", "10pm"]],
+    "tests": "Comparing a time with a rule"
+  },
+  {
+    "id": "held-04",
+    "question": "How many days of annual leave does a full-time employee with 10 years of service get?",
+    "answerable": true,
+    "expectedSources": ["annual_leave_policy.txt#4"],
+    "expectedFacts": [["25"]],
+    "tests": "Two-step: 23 days plus one extra day per 5 completed years"
+  },
+  {
+    "id": "held-05",
+    "question": "What is the policy on company mobile phones?",
+    "answerable": false,
+    "expectedSources": [],
+    "expectedFacts": [],
+    "tests": "No mobile phone policy exists"
+  }
+]

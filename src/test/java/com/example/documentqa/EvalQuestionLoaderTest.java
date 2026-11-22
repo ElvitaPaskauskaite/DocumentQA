@@ -87,4 +87,11 @@ class EvalQuestionLoaderTest {
             }
         }
     }
+
+    @Test
+    void heldOutFileLoads() throws IOException {
+        // Checked now, because the held-out set is only run once, at the end
+        List<EvalQuestion> questions = loader.load(Path.of("eval/heldout.json"));
+        assertEquals(5, questions.size());
+    }
 }

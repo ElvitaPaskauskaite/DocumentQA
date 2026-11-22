@@ -32,10 +32,14 @@ public class Evaluator {
         AnswerService answerService = new AnswerService(search, new PromptBuilder(),
                 new OllamaChatModel(config.getChatModel()), config.getTopK(), config.getMinScore());
 
-        List<EvalQuestion> questions = new EvalQuestionLoader().load(Path.of("eval/questions.json"));
+        // The question file can be given as a program argument, so the held-out
+        // set (eval/heldout.json) is scored by exactly the same code
+        String questionFile = args.length > 0 ? args[0] : "eval/questions.json";
+        List<EvalQuestion> questions = new EvalQuestionLoader().load(Path.of(questionFile));
 
         // Printed with every table: chunk keys and scores only mean something
         // for these exact settings, so a table without them can't be compared
+        System.out.println("Questions: " + questionFile + " (" + questions.size() + ")");
         System.out.println("Embedding model: " + config.getEmbeddingModel()
                 + " | Chat model: " + config.getChatModel() + " (temperature 0)");
         System.out.println("Chunks: " + chunks.size() + " (max " + config.getChunkMaxWords()
