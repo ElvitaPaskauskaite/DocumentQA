@@ -20,7 +20,7 @@
     "question": "Can I claim a taxi home at 23:30 after a work event?",
     "answerable": true,
     "expectedSources": ["travel_expenses_policy.txt#8"],
-    "expectedFacts": [["22:00", "10 pm", "10pm"]],
+        "expectedFacts": [["22:00", "10 pm", "10pm", "10:00"]],
     "tests": "Comparing a time with a rule"
   },
   {

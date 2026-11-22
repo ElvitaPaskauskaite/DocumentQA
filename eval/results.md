@@ -46,3 +46,23 @@ Two runs gave word-for-word identical answers.
 **What didn't:** proc-01 (€4,000) and proc-02 (exactly €1,000), the questions the line was aimed at, still answer "one quote". leave-02 and leave-04 are unchanged.
 
 **Decision:** kept. A small gain (one question) on a small set, so it is weak evidence; the target failure is not fixed.
+
+## Experiment 2: only the top paragraph (top-k 1)
+
+**Change:** top-k 3 → 1, on top of Experiment 1. The idea: proc-01 and proc-02 had the right paragraph first but answered from the second one.
+
+| Measure | Experiment 1 (top-k 3) | Top-k 1 |
+|---|---|---|
+| Expected chunk retrieved | 15/15 (top 3) | 12/15 (top 1) |
+| Expected chunk cited | 12/15 | 10/15 |
+| Answer contains the expected facts | 11/15 | 8/15 |
+| Answerable question wrongly refused | 1/15 | 3/15 |
+| Unanswerable question correctly refused | 5/5 | 5/5 |
+
+**What changed:** proc-02 (exactly €1,000) is now correct. proc-01 (€4,000) cited the right paragraph but said "two quotes", a number not in it, so the model misreads the rule even without the distracting paragraph. proc-03, leave-01 and leave-03 lost their right paragraph (ranked 2nd or 3rd); leave-01 invented "26 days". proc-05 was refused.
+
+**Also measured:** the right paragraph is ranked first for 12/15 questions and in the top 3 for 15/15.
+
+**Decision:** rejected, top-k back to 3. Fewer paragraphs removes the distraction but loses too many right answers.
+
+**Note:** experiments are run one at a time on top of the best setup so far, so combinations of changes are not tested.
