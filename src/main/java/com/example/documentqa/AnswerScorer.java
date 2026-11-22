@@ -36,7 +36,9 @@ public final class AnswerScorer {
      * crude on purpose, so the results are checked by hand as well.
      */
     public static boolean containsExpectedFacts(EvalQuestion question, Answer answer) {
-        String text = answer.text().toLowerCase(Locale.ROOT);
+        // Remove citation labels first: "[procurement_policy.txt#3]" contains "3",
+        // which made a wrong "one quote" answer pass the ["three", "3"] check
+        String text = answer.text().replaceAll("\\[[^\\]]*\\]", "").toLowerCase(Locale.ROOT);
         return question.expectedFacts().stream()
                 .allMatch(group -> group.stream()
                         .anyMatch(fact -> text.contains(fact.toLowerCase(Locale.ROOT))));

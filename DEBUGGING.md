@@ -37,3 +37,9 @@ Each entry: symptom → cause → fix → lesson. Added when the bug is fixed.
 - **Cause:** Console text had been pasted into the file name, so it didn't end in `.txt` and the filter skipped it.
 - **Fix:** renamed the file with `mv`.
 - **Lesson:** when something is silently skipped, list the folder and check the real file names.
+
+## 7. Wrong answers scored as correct by the evaluation
+- **Symptom:** in the first evaluation run (21 Nov 2026), "You need one quote ... [procurement_policy.txt#3]" passed the fact check for "three quotes".
+- **Cause:** the fact check searched the whole answer, including the citation label, and the label `#3` contains "3".
+- **Fix:** citation labels are removed before matching facts. A regression test reproduces the case.
+- **Lesson:** check the scorer, not just the system. Reading the answers by hand caught a bug that made the results look better than they were (12/15 instead of 10/15).

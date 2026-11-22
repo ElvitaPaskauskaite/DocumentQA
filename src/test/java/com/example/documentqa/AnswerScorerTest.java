@@ -88,4 +88,12 @@ class AnswerScorerTest {
         Answer wrong = new Answer("The limit is €300.", List.of());
         assertTrue(AnswerScorer.containsExpectedFacts(LAPTOP, wrong));
     }
+
+    @Test
+    void citationLabelsAreIgnoredWhenMatchingFacts() {
+        // Regression: the label "[procurement_policy.txt#3]" contains "3", so the
+        // wrong answer "one quote" used to pass the ["three", "3"] fact check
+        Answer wrong = new Answer("You need one quote. [procurement_policy.txt#3]", List.of());
+        assertFalse(AnswerScorer.containsExpectedFacts(LAPTOP, wrong));
+    }
 }
