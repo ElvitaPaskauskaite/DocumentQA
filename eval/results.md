@@ -66,3 +66,24 @@ Two runs gave word-for-word identical answers.
 **Decision:** rejected, top-k back to 3. Fewer paragraphs removes the distraction but loses too many right answers.
 
 **Note:** experiments are run one at a time on top of the best setup so far, so combinations of changes are not tested.
+
+## Experiment 3: larger chat model (llama3.1:8b)
+
+**Change:** chat model llama3.2 → llama3.1:8b, on top of Experiment 1. Only a setting changed; no code, because the model sits behind the `ChatModel` interface.
+
+| Measure | Experiment 1 (llama3.2) | llama3.1:8b |
+|---|---|---|
+| Expected chunk retrieved (top 3) | 15/15 | 15/15 |
+| Expected chunk cited | 12/15 | 13/15 |
+| Answer contains the expected facts (scorer) | 11/15 | 12/15 |
+| Answer correct, checked by hand | 11/15 | 11/15 |
+| Answerable question wrongly refused | 1/15 | 1/15 |
+| Unanswerable question correctly refused | 5/5 | 5/5 |
+
+**What changed:** proc-01 (€4,000 laptop), wrong in every earlier run, is now correct. proc-05 broke: it said an €80 gift *can* be accepted ("€30 less than the allowed €50"). The scorer counted that as correct because "50" appears in it; the hand check caught it.
+
+**Decision:** rejected, back to llama3.2. Same result by hand, a much larger and slower model, and its new mistake is a confident wrong "yes".
+
+## Not tested
+
+- **Leaving header and contact paragraphs out of the index, and tuning min-score.** Refusals are already 5/5 and retrieval 15/15 on this question set, so neither change could show a measurable gain. They would need more unanswerable questions that currently slip through.
