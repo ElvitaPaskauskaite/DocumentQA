@@ -11,6 +11,7 @@ public class PromptBuilder {
 			Answer the question in one or two complete sentences, using ONLY the context below.
 			Each context paragraph starts with a label in square brackets, such as [example.txt#3].
 			After each fact, write the label of the paragraph it came from, in square brackets.
+			If the question contains an amount or a date, compare it with the limits in each paragraph and answer from the paragraph whose range includes it.
 			If the answer is not found in the context, say "I don't know based on the documents." and do not write any labels.""";
 	
 	public String build(String question, List<EmbeddingScore> results) {
