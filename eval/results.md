@@ -84,6 +84,22 @@ Two runs gave word-for-word identical answers.
 
 **Decision:** rejected, back to llama3.2. Same result by hand, a much larger and slower model, and its new mistake is a confident wrong "yes".
 
+## Experiment 4: word-count embeddings instead of nomic-embed-text
+
+**Change:** the embedding model swapped for the bag-of-words baseline (counts shared words, no meaning), on top of Experiment 1. Run twice: with the usual min-score 0.5, and with no threshold (0.0), because bag-of-words scores are lower overall and 0.5 was chosen for nomic-embed-text.
+
+| Measure | nomic-embed-text | Bag-of-words, min-score 0.5 | Bag-of-words, no threshold |
+|---|---|---|---|
+| Expected chunk retrieved (top 3) | 15/15 | 6/15 | 10/15 |
+| Expected chunk cited | 12/15 | 5/15 | 8/15 |
+| Answer contains the expected facts | 11/15 | 5/15 | 6/15 |
+| Answerable question wrongly refused | 1/15 | 10/15 | 7/15 |
+| Unanswerable question correctly refused | 5/5 | 5/5 | 5/5 |
+
+**What it shows:** even without a threshold, word counting finds the right paragraph for only 10/15 questions. It misses when the question uses different words from the policy ("€4,000 laptop" vs "purchases", "flight" vs "flights"). With no threshold all 5 unanswerable questions reached the model and were still refused, so the prompt's refusal instruction, not min-score, is what prevents guessing here.
+
+**Decision:** nomic-embed-text stays. The baseline exists to show what the embedding model adds: +5 questions retrieved and +5 answered correctly over the fairest bag-of-words run.
+
 ## Not tested
 
 - **Leaving header and contact paragraphs out of the index, and tuning min-score.** Refusals are already 5/5 and retrieval 15/15 on this question set, so neither change could show a measurable gain. They would need more unanswerable questions that currently slip through.

@@ -23,9 +23,15 @@ public class Evaluator {
             chunks.addAll(splitter.split(document));
         }
 
-        CachingEmbeddingModel embedder = new CachingEmbeddingModel(
+        // Optional second argument "bag-of-words" swaps in the word-count baseline,
+        // to measure how much the real embedding model adds. Both implement
+        // EmbeddingModel, so nothing else in the pipeline changes.
+        boolean bagOfWords = args.length > 1 && args[1].equals("bag-of-words");
+        CachingEmbeddingModel cache = new CachingEmbeddingModel(
                 new OllamaEmbeddingModel(config.getEmbeddingModel()),
                 config.getEmbeddingModel(), Path.of(config.getEmbeddingCacheFile()));
+        EmbeddingModel embedder = bagOfWords ? new BagOfWordsEmbeddingModel(chunks) : cache;
+        String embedderName = bagOfWords ? "bag-of-words" : config.getEmbeddingModel();
         SemanticSearchService search = new SemanticSearchService(embedder, new InMemoryVectorStore());
         search.index(chunks);
 
@@ -40,7 +46,7 @@ public class Evaluator {
         // Printed with every table: chunk keys and scores only mean something
         // for these exact settings, so a table without them can't be compared
         System.out.println("Questions: " + questionFile + " (" + questions.size() + ")");
-        System.out.println("Embedding model: " + config.getEmbeddingModel()
+        System.out.println("Embedding model: " + embedderName
                 + " | Chat model: " + config.getChatModel() + " (temperature 0)");
         System.out.println("Chunks: " + chunks.size() + " (max " + config.getChunkMaxWords()
                 + " words, overlap " + config.getChunkOverlapWords() + ") | top-k: "
@@ -81,7 +87,7 @@ public class Evaluator {
         }
 
         // The question embeddings were new, so keep them for the next run
-        embedder.save();
+        cache.save();
 
         System.out.println();
         System.out.println("Retrieved expected chunk (top " + config.getTopK() + "): " + retrieved + "/" + answerable);
