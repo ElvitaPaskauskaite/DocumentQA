@@ -2,8 +2,6 @@ package com.example.documentqa;
 
 import java.util.List;
 import java.util.Scanner;
-import java.util.ArrayList;
-import java.nio.file.Path;
 
 public class Main {
 
@@ -17,29 +15,22 @@ public class Main {
 		System.out.println("  Retrieval-Augmented Generation in Java");
 		printLine();
 
-		// Load every document in the folder and split them all into chunks
+		// Load, split and index every document, with the same set-up as Evaluator and the REST API
 		System.out.println();
-		System.out.println("STEP 1: Loading and splitting the documents");
+		System.out.println("STEP 1: Loading, splitting and indexing the documents");
 		printLine();
 
-		// Load every .txt file in the documents folder
-		DocumentLoader loader = new DocumentLoader();
-		List<Document> documents = loader.loadFolder(config.getDocumentsFolder());
+		Pipeline pipeline = Pipeline.build(config);
+		List<TextChunk> chunks = pipeline.chunks();   // still needed for the keyword search below
 
-		// Split each document and collect ALL chunks in one list.
-		// Keys stay unique because each chunk carries its file name (e.g. procurement_policy.txt#4)
-		// Chunk size limits come from application.properties
-		TextSplitter splitter = new TextSplitter(config.getChunkMaxWords(), config.getChunkOverlapWords());
-		List<TextChunk> chunks = new ArrayList<>();
-
-		for (Document document : documents) {
-			List<TextChunk> documentChunks = splitter.split(document);
-			chunks.addAll(documentChunks);
-			System.out.println("  File   : " + document.getTitle() + " (" + documentChunks.size() + " chunks)");
+		for (Document document : pipeline.documents()) {
+			System.out.println("  File   : " + document.getTitle());
 		}
+		System.out.println("  Total  : " + chunks.size() + " chunks from " + pipeline.documents().size() + " files");
 
-		System.out.println("  Total  : " + chunks.size() + " chunks from " + documents.size() + " files");
-
+		CachingEmbeddingModel cache = pipeline.cache();
+		System.out.println("  Indexed in " + pipeline.indexMillis() + " ms ("
+				+ cache.getHits() + " from cache, " + cache.getMisses() + " newly embedded)");
 		// Ask the question
 		Scanner scanner = new Scanner(System.in);
 		System.out.print("\n  Enter a question: ");
@@ -69,29 +60,8 @@ public class Main {
 		System.out.println("STEP 3: Semantic search (Version 2: embeddings + cosine similarity)");
 		printLine();
 		
-		// The real model, wrapped in a cache: only new or changed chunks are sent to Ollama.
-		// The variable type is CachingEmbeddingModel (not EmbeddingModel) because Main needs
-		// save() and the hit/miss counts, which aren't part of the interface.
-		EmbeddingModel ollama = new OllamaEmbeddingModel(config.getEmbeddingModel());
-		CachingEmbeddingModel model = new CachingEmbeddingModel(
-				ollama, config.getEmbeddingModel(), Path.of(config.getEmbeddingCacheFile()));
-		SemanticSearchService semantic = new SemanticSearchService(model, new InMemoryVectorStore());
-
-		// Time the indexing, so the effect of the cache can be measured
-		long start = System.nanoTime();
-		semantic.index(chunks);
-		long indexMillis = (System.nanoTime() - start) / 1_000_000;   // nanoseconds -> milliseconds
-
-		// Write the vectors to disk for the next run
-		model.save();
-
-		System.out.println("  Indexed " + chunks.size() + " chunks in " + indexMillis + " ms ("
-				+ model.getHits() + " from cache, " + model.getMisses() + " newly embedded)");
-
-		// Build the answer pipeline: search -> prompt -> LLM
-		PromptBuilder promptBuilder = new PromptBuilder();
-		ChatModel chat = new OllamaChatModel(config.getChatModel());
-		AnswerService answerService = new AnswerService(semantic, promptBuilder, chat, config.getTopK(), config.getMinScore());
+		// Built and indexed in step 1; this step only uses it
+		AnswerService answerService = pipeline.answerService();
 
 		// ONE search: AnswerService searches, calls the LLM, and returns the chunks it used
 		System.out.println("  Searching and generating an answer... (this can take a few seconds)");

@@ -1,7 +1,6 @@
 package com.example.documentqa;
 
 import java.nio.file.Path;
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -15,28 +14,14 @@ public class Evaluator {
     public static void main(String[] args) throws Exception {
         AppConfig config = new AppConfig("application.properties");
 
-        // Same preparation as Main, so the evaluation measures the real system
-        List<Document> documents = new DocumentLoader().loadFolder(config.getDocumentsFolder());
-        TextSplitter splitter = new TextSplitter(config.getChunkMaxWords(), config.getChunkOverlapWords());
-        List<TextChunk> chunks = new ArrayList<>();
-        for (Document document : documents) {
-            chunks.addAll(splitter.split(document));
-        }
-
-        // Optional second argument "bag-of-words" swaps in the word-count baseline,
-        // to measure how much the real embedding model adds. Both implement
-        // EmbeddingModel, so nothing else in the pipeline changes.
+        // Optional second argument "bag-of-words" swaps in the word-count baseline
         boolean bagOfWords = args.length > 1 && args[1].equals("bag-of-words");
-        CachingEmbeddingModel cache = new CachingEmbeddingModel(
-                new OllamaEmbeddingModel(config.getEmbeddingModel()),
-                config.getEmbeddingModel(), Path.of(config.getEmbeddingCacheFile()));
-        EmbeddingModel embedder = bagOfWords ? new BagOfWordsEmbeddingModel(chunks) : cache;
-        String embedderName = bagOfWords ? "bag-of-words" : config.getEmbeddingModel();
-        SemanticSearchService search = new SemanticSearchService(embedder, new InMemoryVectorStore());
-        search.index(chunks);
 
-        AnswerService answerService = new AnswerService(search, new PromptBuilder(),
-                new OllamaChatModel(config.getChatModel()), config.getTopK(), config.getMinScore());
+        // Same set-up as Main and the REST API, so the evaluation measures the real system
+        Pipeline pipeline = Pipeline.build(config, bagOfWords);
+        List<TextChunk> chunks = pipeline.chunks();
+        String embedderName = pipeline.embedderName();
+        AnswerService answerService = pipeline.answerService();
 
         // The question file can be given as a program argument, so the held-out
         // set (eval/heldout.json) is scored by exactly the same code
@@ -87,7 +72,7 @@ public class Evaluator {
         }
 
         // The question embeddings were new, so keep them for the next run
-        cache.save();
+        pipeline.cache().save();
 
         System.out.println();
         System.out.println("Retrieved expected chunk (top " + config.getTopK() + "): " + retrieved + "/" + answerable);
