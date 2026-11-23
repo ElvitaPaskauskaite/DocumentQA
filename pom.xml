@@ -1,5 +1,15 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
+  
+  <!-- Spring Boot parent: a tested set of library and plugin versions, so Spring, Jackson
+       and Tomcat are known to work together. Empty relativePath = fetch it from Maven Central,
+       not from a parent folder -->
+  <parent>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-starter-parent</artifactId>
+    <version>4.1.1</version>
+    <relativePath/>
+  </parent>
   <groupId>DocumentQA</groupId>
   <artifactId>DocumentQA</artifactId>
   <version>0.0.1-SNAPSHOT</version>
@@ -10,18 +20,25 @@
   </properties>
 
   <dependencies>
-    <!-- Jackson: builds and reads JSON for the Ollama API calls -->
+       <!-- Jackson 2: builds and reads JSON for the Ollama API calls.
+         No version: the Spring Boot parent picks one that matches the annotations library
+         shared with Jackson 3, which Spring itself uses for the REST API -->
     <dependency>
       <groupId>com.fasterxml.jackson.core</groupId>
       <artifactId>jackson-databind</artifactId>
-      <version>2.17.2</version>
     </dependency>
 
-    <!-- JUnit 5: test framework. "test" scope = only for src/test/java, never in the app -->
+    <!-- Spring Web MVC: an embedded Tomcat server and @RestController support for the REST API -->
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-webmvc</artifactId>
+    </dependency>
+
+        <!-- JUnit: test framework. "test" scope = only for src/test/java, never in the app.
+         No version: the Spring Boot parent manages all JUnit libraries together, so they can't mismatch -->
     <dependency>
       <groupId>org.junit.jupiter</groupId>
       <artifactId>junit-jupiter</artifactId>
-      <version>5.11.4</version>
       <scope>test</scope>
     </dependency>
   </dependencies>
@@ -30,16 +47,24 @@
     <plugins>
       <plugin>
         <artifactId>maven-compiler-plugin</artifactId>
-        <version>3.13.0</version>
         <configuration>
           <release>21</release>
         </configuration>
       </plugin>
 
-      <!-- Surefire runs the tests in "mvn test". 3.x is needed to find JUnit 5 tests -->
+      <!-- Surefire runs the tests in "mvn test" -->
       <plugin>
         <artifactId>maven-surefire-plugin</artifactId>
-        <version>3.5.2</version>
+      </plugin>
+
+      <!-- Lets "mvn spring-boot:run" start the REST API from the terminal.
+           mainClass is needed because the project has three main methods (Main, Evaluator, this one) -->
+      <plugin>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-maven-plugin</artifactId>
+        <configuration>
+          <mainClass>com.example.documentqa.DocumentQaApplication</mainClass>
+        </configuration>
       </plugin>
     </plugins>
   </build>

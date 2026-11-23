@@ -1,6 +1,6 @@
 # Evaluation results
 
-Each run asks the 20 questions in `questions.json` (15 answerable, 5 unanswerable) and scores every answer with `AnswerScorer`. Every "yes" for answer facts was also checked by hand. Small fictional set of 3 policies (39 chunks); results only apply to these settings.
+Each run asks the 20 questions in `questions.json` (15 answerable, 5 unanswerable) and scores every answer with `AnswerScorer`. Every "yes" for answer facts was also checked by hand. Small fictional set of 3 policies (39 chunks); results only apply to these settings. Problems first noticed by hand, before measuring, are in `observations.md`.
 
 ## Baseline 
 
@@ -69,7 +69,7 @@ Two runs gave word-for-word identical answers.
 
 ## Experiment 3: larger chat model (llama3.1:8b)
 
-**Change:** chat model llama3.2 → llama3.1:8b, on top of Experiment 1. Only a setting changed; no code, because the model sits behind the `ChatModel` interface.
+**Change:** chat model llama3.2 → llama3.1:8b, on top of Experiment 1. Only a setting changed (the model name in `application.properties`); no code.
 
 | Measure | Experiment 1 (llama3.2) | llama3.1:8b |
 |---|---|---|

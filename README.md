@@ -166,7 +166,7 @@ Full details for every run are in [`eval/results.md`](eval/results.md), and the 
 
 ## Design decisions
 
-- **Interfaces for each replaceable part** (`EmbeddingModel`, `ChatModel`, `VectorStore`). The rest of the code doesn't know which model or store it uses. Trying `llama3.1:8b` was a settings change with no code change, and the tests swap in fakes. A database-backed `VectorStore` could replace the in-memory one later.
+- **Interfaces for each replaceable part** (`EmbeddingModel`, `ChatModel`, `VectorStore`). The rest of the code doesn't know which model or store it uses: the word-count experiment swapped in a different `EmbeddingModel` class without changing the search code, and the tests swap in fakes. A database-backed `VectorStore` could replace the in-memory one later. Model names are settings in `application.properties`, so trying `llama3.1:8b` needed no code change.
 - **The cache is a decorator.** `CachingEmbeddingModel` is itself an `EmbeddingModel` that wraps the real one, so search code doesn't know caching exists. The cache key is a SHA-256 hash of the model name and the text, so changing the model or a paragraph can never return a stale vector.
 - **Test doubles instead of Ollama in unit tests**, so tests are fast, repeatable and run in CI without a model server.
 - **Scoring rules are pure static functions** (`AnswerScorer`): no state and no I/O, so each rule is easy to unit test. That is how the scorer bug was pinned down with a test before it was fixed.
