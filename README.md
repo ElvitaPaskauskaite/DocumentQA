@@ -2,7 +2,7 @@
 
 ![Tests](https://github.com/ElvitaPaskauskaite/DocumentQA/actions/workflows/ci.yml/badge.svg)
 
-DocumentQA answers questions about a set of company policy documents. Each answer is based only on the documents, cites the paragraph it came from, and says "I don't know" when the documents don't cover the question. Everything runs locally with [Ollama](https://ollama.com), so the documents are never sent to a cloud service.
+DocumentQA answers questions about a set of company policy documents. Each answer is based only on the documents, cites the paragraph it came from, and says "I don't know" when the documents don't cover the question. Everything runs locally with [Ollama](https://ollama.com), so the documents are never sent to a cloud service. It can be used from the Console or through a small REST API built with Spring Boot.
 
 It is a working prototype of the retrieval-augmented generation pattern (find the relevant text first, then ask a language model to answer from it). I built it from first principles in Java 21, without a RAG framework. It was tested on a small fictional corpus of 3 policies (39 paragraphs) and measured with an evaluation set of 20 questions. On the final setup, the right paragraph was retrieved for 15/15 answerable questions, 11/15 answers were correct when checked by hand, and 5/5 unanswerable questions were correctly refused.
 
@@ -97,15 +97,55 @@ A missing or blank setting stops the program with an error naming the key.
   - `eval/heldout.json`: the held-out set
   - `eval/questions.json bag-of-words`: the word-count baseline embedder instead of `nomic-embed-text`
 
+
+**REST API** (Spring Boot). Start it from the project root:
+
+```
+mvn spring-boot:run
+```
+
+Documents are loaded and indexed once at startup, and the server listens on `http://localhost:8080`.
+
+| Request | Response |
+|---|---|
+| `GET /health` | `{"status":"UP"}`: the web server is running (it doesn't check Ollama) |
+| `POST /questions` with `{"question": "..."}` | The answer, plus every retrieved paragraph with its score and whether the answer cited it |
+| Blank or missing `question` | 400 Bad Request |
+| Ollama not reachable | 503 Service Unavailable |
+
+Example:
+
+```
+curl -s -X POST http://localhost:8080/questions \
+  -H "Content-Type: application/json" \
+  -d '{"question":"Who needs to approve a €600 office chair?"}'
+```
+
+Response (formatted, scores rounded, two paragraphs shortened):
+
+```json
+{
+  "answer": "The employee's line manager needs to approve the purchase of an office chair under €1,000. [procurement_policy.txt#3]",
+  "sources": [
+    { "key": "procurement_policy.txt#3", "score": 0.644, "cited": true,
+      "content": "Purchases under €1,000 need one quote and approval from the employee's line manager." },
+    { "key": "procurement_policy.txt#5", "score": 0.687, "cited": false,
+      "content": "Purchases of €10,000 or more must go through a formal tender process ..." },
+    { "key": "procurement_policy.txt#4", "score": 0.645, "cited": false,
+      "content": "Purchases of €1,000 or more but under €10,000 need three written quotes ..." }
+  ]
+}
+```
+
 ## Tests
 
 ```
 mvn test
 ```
 
-88 tests (JUnit 5). They fall into two kinds:
+92 tests (JUnit Jupiter). They fall into two kinds:
 
-- **Unit tests** use test doubles (`FakeEmbeddingModel`, `FakeChatModel`) instead of Ollama, so they are fast (about 0.5 s) and give the same result every time. They cover cosine similarity edge cases (such as the zero vector), chunking, the vector store, search and the minimum score, prompt building, citation checking, the embedding cache, configuration errors, and the evaluation's loader and scoring rules.
+- **Unit tests** use test doubles (`FakeEmbeddingModel`, `FakeChatModel`) instead of Ollama, so they are fast and give the same result every time. They cover cosine similarity edge cases (such as the zero vector), chunking, the vector store, search and the minimum score, prompt building, citation checking, the embedding cache, configuration errors, the evaluation's loader and scoring rules, and the REST API's status codes and JSON (with MockMvc, which sends requests to the controller without starting a server).
 - **Integration tests** (`OllamaIntegrationTest`, 3 tests) call the real Ollama server to check the HTTP and JSON code. They are skipped, not failed, when Ollama isn't running.
 
 GitHub Actions runs `mvn test` on every push and pull request. Ollama isn't available there, so the integration tests are skipped in CI.
@@ -175,6 +215,9 @@ Full details for every run are in [`eval/results.md`](eval/results.md), and the 
 - **Temperature 0 before measuring,** so a change in the score comes from the change being tested, not from chance.
 - **Runs locally:** policy documents stay on the machine.
 - **Built from scratch** (cosine similarity, chunking, vector store, prompt, evaluation) to understand each step before using a framework.
+- **One shared pipeline set-up** (`Pipeline.build`) for `Main`, `Evaluator` and the REST API, so the API answers with exactly the system that was evaluated. I checked this refactor by re-running the evaluation and getting identical totals.
+- **Spring Boot only at the edge.** The controller translates between JSON and the existing classes; the answering logic stays in plain Java, so it can be tested without a server.
+- **Status codes say whose problem it is:** 400 for a blank question (the client's mistake), 503 when Ollama is down (a dependency, so retrying later may work), instead of a 500 that looks like a bug.
 
 ## Challenges and debugging
 
@@ -195,13 +238,13 @@ All entries are in [`DEBUGGING.md`](DEBUGGING.md). Some that shaped the project:
 - The citation check misses several labels inside one bracket and doesn't detect invented labels.
 - The embedding cache never removes old entries, and a corrupt cache file stops the program.
 - Only flat folders of `.txt` files are loaded, and chunk size is measured in words, not model tokens.
-- Title and contact paragraphs can match questions like "... policy?" on wording alone.
+- The REST API is for one local user: there is no login, and requests share an embedding cache (a plain `HashMap`) that isn't safe for simultaneous writes.
 
 **What a production version would still need:** access control (who may see which document), support for PDF and Word files, a persistent vector database, a much larger evaluation set built from real employee questions, comparing amounts and dates in code instead of asking the model, monitoring of answers in use, and protection against instructions hidden inside documents.
 
 **Next steps**
 
-- A REST API (Spring Boot) so other applications can ask questions.
+- Login and safe handling of several requests at once, so the REST API could serve more than one local user.
 - An `expectedAnswer` (yes/no) field so the scorer can judge yes/no answers.
 - More unanswerable questions, so that the minimum score and excluding header paragraphs can be measured.
 - A `VectorStore` backed by a database with vector search, such as SAP HANA Cloud's vector engine.
@@ -210,8 +253,8 @@ All entries are in [`DEBUGGING.md`](DEBUGGING.md). Some that shaped the project:
 
 | Path | Contents |
 |---|---|
-| `src/main/java/com/example/documentqa/` | The application: loading, splitting, embedding, search, prompt, answer, evaluation |
-| `src/test/java/com/example/documentqa/` | JUnit 5 tests and the two test doubles |
+| `src/main/java/com/example/documentqa/` | The application: loading, splitting, embedding, search, prompt, answer, evaluation, REST API |
+| `src/test/java/com/example/documentqa/` | JUnit tests (including MockMvc tests for the REST API) and the two test doubles |
 | `documents/` | The 3 fictional Acme Ltd policies that are indexed |
 | `eval/` | Question sets, `results.md` (every measured run) and `observations.md` (problems found by hand) |
 | `samples/dev-notes/` | Early test documents (Java and Git notes), kept because older debugging entries refer to them; not indexed |
