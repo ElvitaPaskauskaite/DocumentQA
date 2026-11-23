@@ -56,3 +56,10 @@ Each entry: symptom → cause → fix → lesson. Added when the bug is fixed.
 - **Cause:** vectors were sent as bytes (HANA's binary vector format) into `TO_REAL_VECTOR(?)`. With an untyped `?`, HANA chose the text version of the function, so the bytes arrived as an empty string.
 - **Fix:** cast the parameter, `TO_REAL_VECTOR(CAST(? AS VARBINARY(5000)))`, so HANA uses the binary version. Kept in one constant used by insert, update and search.
 - **Lesson:** a database function can have several versions; when a parameter's type is ambiguous, state it. The error message ("vector string") pointed straight at the cause.
+
+
+## 10. "Unable to locate a Java Runtime" when running the evaluator from Terminal
+- **Symptom:** `mvn` commands worked, but `java -cp … Evaluator` said no Java runtime was installed.
+- **Cause:** Maven finds its own Java installation; the plain `java` command on the Mac was the system placeholder, which didn't know where Java was installed.
+- **Fix:** used the Java folder that `mvn -v` reports (the `runtime:` line) to run the evaluator. The first attempt read a "Java home:" line that this Maven version doesn't print, so the path came out empty.
+- **Lesson:** two tools can use different Java installations; check which one each actually runs.

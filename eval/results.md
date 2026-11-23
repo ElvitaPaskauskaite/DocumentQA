@@ -115,6 +115,24 @@ Two runs gave word-for-word identical answers.
 
 **Conclusion:** retrieval holds up on unseen questions. The weak point on both sets is the model comparing an amount or time with a rule, and the prompt line did not fix that in general. Four answerable questions are too few to measure overfitting on their own; the value of this check is that it shows the same pattern as the main set.
 
+## Experiment 5: vector store in SAP HANA Cloud
+
+**Change:** `vector.store=memory` → `hana`, on top of the final setup (Experiment 1). The 39 chunk vectors are stored in a `REAL_VECTOR` column in an SAP HANA Cloud trial instance (US East), and the top 3 paragraphs are ranked by HANA's `COSINE_SIMILARITY` instead of my Java code. Everything else is unchanged.
+
+| Measure | In memory (Experiment 1) | SAP HANA Cloud |
+|---|---|---|
+| Expected chunk retrieved (top 3) | 15/15 | 15/15 |
+| Expected chunk cited | 12/15 | 12/15 |
+| Answer contains the expected facts | 11/15 | 11/15 |
+| Answerable question wrongly refused | 1/15 | 1/15 |
+| Unanswerable question correctly refused | 5/5 | 5/5 |
+
+**What changed:** nothing in the results: the same totals and the same four failures (proc-01, proc-02, leave-02, leave-04). A spot check of the €600 chair question through the REST API gave the same answer, word for word, from the same three paragraphs. Scores differed only around the 8th decimal place, because HANA stores single-precision numbers. The two closest paragraphs were 0.0001 apart, far more than that difference, so the ranking can't change at this precision.
+
+**Cost:** starting the API on HANA took 19 s instead of under 1 s, because the 39 vectors are uploaded one at a time to a server in the US. Each question is then a single search query.
+
+**Decision:** kept as an option; in-memory stays the default so documents stay local unless HANA is chosen. At 39 paragraphs the database adds no quality, as expected. What it adds is that the vectors persist and the search runs in a database that can hold far more of them, next to other business data.
+
 ## What I'd improve next
 
 - **Scorer:** the keyword check marked a wrong yes/no answer as correct 3 times (proc-05 with llama3.1:8b, held-01, held-03), because the number appears whether the answer is yes or no. An `expectedAnswer` field (yes/no) would catch this.

@@ -32,7 +32,7 @@ public class Evaluator {
         // for these exact settings, so a table without them can't be compared
         System.out.println("Questions: " + questionFile + " (" + questions.size() + ")");
         System.out.println("Embedding model: " + embedderName
-                + " | Chat model: " + config.getChatModel() + " (temperature 0)");
+                + " | Chat model: " + config.getChatModel() + " (temperature 0) | Vector store: " + pipeline.storeName());
         System.out.println("Chunks: " + chunks.size() + " (max " + config.getChunkMaxWords()
                 + " words, overlap " + config.getChunkOverlapWords() + ") | top-k: "
                 + config.getTopK() + " | min-score: " + config.getMinScore());
