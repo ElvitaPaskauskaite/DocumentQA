@@ -1,8 +1,8 @@
 # Evaluation observations
 
-Problems I noticed while testing DocumentQA by hand. Each one shows a way a
-question-answering system can go wrong, and each will become a test case
-when I measure the system properly.
+Problems I noticed while testing DocumentQA by hand, before measuring it
+properly. Each one became questions or experiments in the evaluation. The
+measured results are in `results.md`; new numbers go there, not here.
 
 These are not bugs in my code. The code did what it was written to do, but
 the result still wasn't good enough. When I fix one, I move it to
@@ -44,7 +44,7 @@ two separate steps, and either can fail.** So I measure them separately.
   €4,000 laptop question then gave word-for-word the same answer and
   citation in 3 out of 3 runs (see #3).
 
-## 3. The model compared amounts wrongly (20 Nov 2026)
+## 3. The model compared amounts wrongly 
 - **Question:** "How many quotes do I need for a €4,000 laptop?"
 - **Correct answer:** three quotes (purchases from €1,000 to under €10,000).
 - **Found:**
@@ -67,8 +67,9 @@ two separate steps, and either can fail.** So I measure them separately.
   which confirms it's the model's comparison, not randomness.
 - **Ideas to test:** tell the model to check the amount against each range;
   retrieve fewer paragraphs; try a larger model.
+- **Measured in `results.md`:** questions proc-01 and proc-02. All three ideas were tested: the comparison prompt line (Experiment 1) didn't fix it, top-k 1 (Experiment 2) fixed the exactly-€1,000 case but lost other answers, and llama3.1:8b (Experiment 3) fixed €4,000 but broke another question.
 
-## 4. An unanswerable question still found "relevant" text (20 Nov 2026)
+## 4. An unanswerable question still found "relevant" text 
 - **Question:** "What is the parental leave policy?" (no document covers this)
 - **Found:** all 3 passed the minimum score of 0.5:
   - `annual_leave_policy.txt#2` 0.600: the policy's title paragraph (owner, version)
@@ -84,3 +85,4 @@ two separate steps, and either can fail.** So I measure them separately.
   the safety net.
 - **Ideas to test:** don't index title and contact paragraphs; check what
   scores all my unanswerable questions get before choosing a minimum score.
+- **Measured in `results.md`:** with no minimum score (Experiment 4), all 5 unanswerable questions still reached the model and were refused, which confirms the refusal instruction is the safety net. Leaving out title and contact paragraphs is listed under "Not tested".
