@@ -43,3 +43,9 @@ Each entry: symptom → cause → fix → lesson. Added when the bug is fixed.
 - **Cause:** the fact check searched the whole answer, including the citation label, and the label `#3` contains "3".
 - **Fix:** citation labels are removed before matching facts. A regression test reproduces the case.
 - **Lesson:** check the scorer, not just the system. Reading the answers by hand caught a bug that made the results look better than they were (12/15 instead of 10/15).
+
+## 8. HANA integration tests skipped although the variables were set
+- **Symptom:** `mvn test` passed, but the 3 `HanaIntegrationTest` tests showed as skipped instead of running.
+- **Cause:** the tests skip unless all three `HANA_*` environment variables are set. `HANA_PASSWORD` was empty: the hidden password prompt (`read -s`) had captured nothing.
+- **Fix:** checked each variable in Terminal, printing only the password's length (it was 0), then set it from the clipboard with `export HANA_PASSWORD="$(pbpaste)"`, so the password never appears on screen or in the shell history.
+- **Lesson:** a skipped test isn't a passing test. When tests skip, check why before trusting a green build.
