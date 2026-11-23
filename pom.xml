@@ -34,6 +34,14 @@
       <artifactId>spring-boot-starter-webmvc</artifactId>
     </dependency>
 
+    <!-- Spring's test tools: MockMvc sends HTTP requests to a controller without starting a server.
+         No version: managed by the Spring Boot parent -->
+    <dependency>
+      <groupId>org.springframework</groupId>
+      <artifactId>spring-test</artifactId>
+      <scope>test</scope>
+    </dependency>
+
         <!-- JUnit: test framework. "test" scope = only for src/test/java, never in the app.
          No version: the Spring Boot parent manages all JUnit libraries together, so they can't mismatch -->
     <dependency>

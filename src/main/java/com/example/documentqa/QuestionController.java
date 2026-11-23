@@ -1,11 +1,16 @@
 package com.example.documentqa;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.server.ResponseStatusException;
 
 // POST /questions: the REST version of what Main does for one Console question.
 // It only translates between JSON and the existing classes; the answering logic
@@ -51,6 +56,20 @@ public class QuestionController {
 
 	@PostMapping("/questions")
 	public QuestionResponse ask(@RequestBody QuestionRequest request) throws Exception {
+		// Reject a missing or empty question before any work. The client made the mistake,
+		// so it gets 400 Bad Request instead of a 500 that looks like a server bug
+		if (request.question() == null || request.question().isBlank()) {
+			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "question must not be blank");
+		}
 		return QuestionResponse.from(answerService.answer(request.question()));
+	}
+
+	// Both Ollama classes throw IOException when Ollama can't be reached or returns an error.
+	// That's a failure of a service this API depends on, not of the request, so the client
+	// gets 503 and knows a retry later may work. A fixed message avoids exposing internal addresses
+	@ExceptionHandler(IOException.class)
+	public ResponseEntity<String> ollamaUnavailable(IOException e) {
+		return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE)
+				.body("The language model service is unavailable. Try again later.");
 	}
 }
