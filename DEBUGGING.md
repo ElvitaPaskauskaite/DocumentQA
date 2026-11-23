@@ -49,3 +49,10 @@ Each entry: symptom → cause → fix → lesson. Added when the bug is fixed.
 - **Cause:** the tests skip unless all three `HANA_*` environment variables are set. `HANA_PASSWORD` was empty: the hidden password prompt (`read -s`) had captured nothing.
 - **Fix:** checked each variable in Terminal, printing only the password's length (it was 0), then set it from the clipboard with `export HANA_PASSWORD="$(pbpaste)"`, so the password never appears on screen or in the shell history.
 - **Lesson:** a skipped test isn't a passing test. When tests skip, check why before trusting a green build.
+
+
+## 9. HANA rejected every vector: "Expected '[', but found ''"
+- **Symptom:** all 8 `HanaVectorStoreTest` tests failed with `Invalid vector format: Expected '[', but found '' … of vector string`. Connecting and creating the table worked.
+- **Cause:** vectors were sent as bytes (HANA's binary vector format) into `TO_REAL_VECTOR(?)`. With an untyped `?`, HANA chose the text version of the function, so the bytes arrived as an empty string.
+- **Fix:** cast the parameter, `TO_REAL_VECTOR(CAST(? AS VARBINARY(5000)))`, so HANA uses the binary version. Kept in one constant used by insert, update and search.
+- **Lesson:** a database function can have several versions; when a parameter's type is ambiguous, state it. The error message ("vector string") pointed straight at the cause.
