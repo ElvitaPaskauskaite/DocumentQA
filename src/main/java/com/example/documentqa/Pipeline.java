@@ -13,6 +13,7 @@ public record Pipeline(
 		List<TextChunk> chunks,
 		CachingEmbeddingModel cache,
 		String embedderName,
+		String storeName,
 		long indexMillis,
 		AnswerService answerService) {
 
@@ -40,7 +41,8 @@ public record Pipeline(
 		EmbeddingModel embedder = bagOfWords ? new BagOfWordsEmbeddingModel(chunks) : cache;
 		String embedderName = bagOfWords ? "bag-of-words" : config.getEmbeddingModel();
 
-		SemanticSearchService search = new SemanticSearchService(embedder, new InMemoryVectorStore());
+		VectorStore store = createStore(config, embedder, chunks);
+		SemanticSearchService search = new SemanticSearchService(embedder, store);
 
 		// Timed so the effect of the cache stays measurable
 		long start = System.nanoTime();
@@ -55,6 +57,19 @@ public record Pipeline(
 
 		// Copies, so code using the pipeline can't change the lists it was built from
 		return new Pipeline(List.copyOf(documents), List.copyOf(chunks), cache,
-				embedderName, indexMillis, answerService);
+				embedderName, config.getVectorStore(), indexMillis, answerService);
+	}
+
+	// vector.store=memory keeps vectors in a Java map; vector.store=hana stores and searches them
+	// in SAP HANA Cloud. The table name includes the vector length, so vectors from different
+	// embedders (768 numbers for nomic-embed-text, vocabulary size for bag-of-words) never share a table
+	private static VectorStore createStore(AppConfig config, EmbeddingModel embedder,
+			List<TextChunk> chunks) throws Exception {
+		if (config.getVectorStore().equals("memory")) {
+			return new InMemoryVectorStore();
+		}
+		// One embedding tells us the vector length (it comes from the cache, so it's cheap)
+		int dimensions = embedder.embed(chunks.get(0).getContent()).length;
+		return new HanaVectorStore(HanaSettings.fromEnvironment(), "CHUNK_VECTORS_" + dimensions, dimensions);
 	}
 }

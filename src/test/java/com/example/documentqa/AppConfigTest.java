@@ -40,6 +40,21 @@ class AppConfigTest {
     }
 
     @Test
+    void vectorStoreAcceptsMemoryAndHana() throws Exception {
+        assertEquals("memory", configWith("vector.store=memory\n").getVectorStore());
+        assertEquals("hana", configWith("vector.store=hana\n").getVectorStore());
+    }
+
+    @Test
+    void unknownVectorStoreGivesAClearError() throws Exception {
+        // A typo like "hanna" must stop the program, not silently fall back to memory
+        AppConfig config = configWith("vector.store=hanna\n");
+
+        IllegalStateException error = assertThrows(IllegalStateException.class, config::getVectorStore);
+        assertTrue(error.getMessage().contains("vector.store"));
+    }
+    
+    @Test
     void trailingSpacesAreTrimmed() throws Exception {
         // A trailing space is invisible in the file and would otherwise break Integer.parseInt
         AppConfig config = configWith("search.top-k=3   \n");
@@ -92,5 +107,6 @@ class AppConfigTest {
         assertDoesNotThrow(config::getEmbeddingCacheFile);
         assertDoesNotThrow(config::getChunkMaxWords);
         assertDoesNotThrow(config::getChunkOverlapWords);
+        assertDoesNotThrow(config::getVectorStore);
     }
 }

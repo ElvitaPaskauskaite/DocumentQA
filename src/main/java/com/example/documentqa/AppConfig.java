@@ -36,4 +36,14 @@ public class AppConfig {
 	public String getEmbeddingCacheFile() { return get("embeddings.cache-file"); }
 	public int getChunkMaxWords()      { return Integer.parseInt(get("chunk.max-words")); }
 	public int getChunkOverlapWords()  { return Integer.parseInt(get("chunk.overlap-words")); }
+
+	// Where chunk vectors are kept: "memory" (nothing leaves the Mac) or "hana" (SAP HANA Cloud).
+	// Any other value is a typo, so it fails at start-up instead of silently using the wrong store
+	public String getVectorStore() {
+		String value = get("vector.store");
+		if (!value.equals("memory") && !value.equals("hana")) {
+			throw new IllegalStateException("Setting 'vector.store' must be memory or hana, not '" + value + "'");
+		}
+		return value;
+	}
 }
