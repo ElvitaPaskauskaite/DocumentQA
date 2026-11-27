@@ -19,14 +19,16 @@ public class SemanticSearchService {
 		this.store = store;
 	}
 
-	// Embed every chunk once and save it in the store. Call once at startup, before searching.
+	// Embed every chunk first, then replace the store's contents. If an embedding fails,
+	// the store keeps the chunks it had before instead of being left half-filled.
 	public void index(List<TextChunk> chunks) throws Exception {
-		store.clear(); // start over if index is called again
-
+		List<double[]> vectors = new ArrayList<>();
 		for (TextChunk chunk : chunks) {
-			double[] vector = model.embed(chunk.getContent()); // text -> numbers
-			store.add(chunk, vector);
+			vectors.add(model.embed(chunk.getContent())); // text -> numbers
 		}
+
+		store.clear(); // start over if index is called again
+		store.addAll(chunks, vectors);
 	}
 
 	// Embed the question and let the store return the best topK

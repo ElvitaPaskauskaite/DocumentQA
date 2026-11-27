@@ -40,7 +40,7 @@ class SemanticSearchServiceTest {
 
     @Test
     void searchBeforeIndexThrows() {
-        // Line 36 of SemanticSearchService: fail loudly instead of returning nothing
+        // Fail loudly instead of returning nothing
         assertThrows(IllegalStateException.class, () -> service.search("hotel question", 3));
     }
 
@@ -67,7 +67,7 @@ class SemanticSearchServiceTest {
     void scoreEqualToMinScoreIsKept() throws Exception {
         service.index(chunks);
 
-        // Boundary: line 54 uses >=, so a score of exactly 1.0 passes minScore 1.0
+        // Boundary: the filter uses >=, so a score of exactly 1.0 passes minScore 1.0
         List<EmbeddingScore> results = service.search("hotel question", 3, 1.0);
 
         assertEquals(List.of("travel.txt#5"), keys(results));
@@ -85,7 +85,7 @@ class SemanticSearchServiceTest {
     @Test
     void indexingTwiceDoesNotDuplicateChunks() throws Exception {
         service.index(chunks);
-        service.index(chunks);   // store.clear() on line 24 starts over
+        service.index(chunks);   // index() clears the store first, so the second call starts over   
 
         assertEquals(3, store.size());
     }
@@ -97,5 +97,21 @@ class SemanticSearchServiceTest {
 
         // 3 chunks + 1 query. With Ollama, every extra call costs about 30 ms
         assertEquals(4, model.getCalls());
+    }
+    
+
+    // A failed embedding during index() must not wipe out the chunks indexed before it
+    @Test
+    void failedEmbeddingKeepsThePreviousChunks() throws Exception {
+        service.index(chunks);
+
+        // The fake has no vector for this text, so embedding it throws partway through
+        TextChunk unknown = new TextChunk("travel.txt", 20, "Text with no fake vector.");
+
+        assertThrows(IllegalArgumentException.class, () -> service.index(List.of(hotel, unknown)));
+
+        assertEquals(3, store.size());
+        assertEquals(List.of("travel.txt#5", "travel.txt#11", "procurement.txt#4"),
+                keys(service.search("hotel question", 3)));
     }
 }
